@@ -1,55 +1,52 @@
+import { useMemo } from 'react'
 import RestaurantCard from './RestaurantCard'
+import useRestaurants from '../hooks/useRestaurants'
 
-const restaurants = [
-  {
-    id: 1,
-    name: 'Bistrô das Montanhas',
-    category: 'Brasileira',
-    location: 'Capivari, Campos do Jordão',
-    rating: '4.8',
-    price: '$$$',
-    image:
-      'https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    id: 2,
-    name: 'Vila di Pasta',
-    category: 'Italiana',
-    location: 'Capivari, Campos do Jordão',
-    rating: '4.7',
-    price: '$$',
-    image:
-      'https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    id: 3,
-    name: 'Kura Sushi',
-    category: 'Japonesa',
-    location: 'Abernéssia, Campos do Jordão',
-    rating: '4.9',
-    price: '$$$',
-    image:
-      'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    id: 4,
-    name: 'Manzano Burger',
-    category: 'Hambúrguer',
-    location: 'Capivari, Campos do Jordão',
-    rating: '4.6',
-    price: '$$',
-    image:
-      'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=80',
-  },
-]
+export default function FeaturedRestaurants({ filters }) {
+  const { restaurants, loading, error } = useRestaurants()
 
-export default function FeaturedRestaurants() {
+  const filteredRestaurants = useMemo(() => {
+    const searchText = filters.search.trim().toLowerCase()
+
+    return restaurants.filter((restaurant) => {
+      const name = restaurant.name?.toLowerCase() || ''
+      const category = restaurant.category?.toLowerCase() || ''
+      const location = restaurant.location?.toLowerCase() || ''
+
+      // Pesquisa por nome, categoria ou localização
+      const matchesSearch =
+        searchText === '' ||
+        name.includes(searchText) ||
+        category.includes(searchText) ||
+        location.includes(searchText)
+
+      // Filtro por categoria
+      let matchesCategory = true
+
+      if (filters.category !== 'Todos') {
+        const selected = filters.category.toLowerCase()
+
+        matchesCategory =
+          category.includes(selected) ||
+          (selected === 'pizzaria' && category.includes('pizza')) ||
+          (selected === 'cafés' && category.includes('cafe')) ||
+          (selected === 'hambúrguer' && category.includes('burger')) ||
+          (selected === 'brasileira' && category.includes('brazilian')) ||
+          (selected === 'italiana' && category.includes('italian')) ||
+          (selected === 'japonesa' && category.includes('japanese')) ||
+          (selected === 'vegetariana' && category.includes('vegetarian'))
+      }
+
+      return matchesSearch && matchesCategory
+    })
+  }, [restaurants, filters.search, filters.category])
+
+  const featured = filteredRestaurants.slice(0, 8)
+
   return (
     <section className="mx-auto max-w-[1440px] py-12">
 
-      {/* Cabeçalho */}
       <div className="mb-7 flex items-end justify-between">
-
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a88b54]">
             Seleção FoodRank
@@ -60,25 +57,61 @@ export default function FeaturedRestaurants() {
           </h2>
 
           <p className="mt-2 text-sm text-[#6d6a61]">
-            Lugares que estão conquistando quem ama comer bem.
+            {filters.search
+              ? `Resultados para "${filters.search}"`
+              : filters.category !== 'Todos'
+                ? `Restaurantes de culinária ${filters.category.toLowerCase()}`
+                : 'Lugares encontrados em Campos do Jordão.'}
           </p>
         </div>
-
-        <button className="hidden rounded-full border border-[#cfc3b0] px-5 py-2.5 text-sm font-semibold text-[#604936] transition hover:border-[#28351f] hover:text-[#28351f] md:block">
-          Ver todos
-        </button>
-
       </div>
 
-      {/* Cards */}
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {restaurants.map((restaurant) => (
-          <RestaurantCard
-            key={restaurant.id}
-            restaurant={restaurant}
-          />
-        ))}
-      </div>
+      {/* Carregando */}
+      {loading && (
+        <div className="rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-10 text-center">
+          <p className="text-sm text-[#6d6a61]">
+            Procurando restaurantes...
+          </p>
+        </div>
+      )}
+
+      {/* Erro */}
+      {error && (
+        <div className="rounded-2xl border border-[#c9aaaa] bg-[#f3e5e1] p-10 text-center">
+          <p className="font-semibold text-[#6b3434]">
+            Não foi possível carregar os restaurantes.
+          </p>
+
+          <p className="mt-2 text-sm text-[#6d6a61]">
+            Tente atualizar a página.
+          </p>
+        </div>
+      )}
+
+      {/* Nenhum resultado */}
+      {!loading && !error && featured.length === 0 && (
+        <div className="rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-10 text-center">
+          <p className="font-display text-xl text-[#28351f]">
+            Nenhum restaurante encontrado
+          </p>
+
+          <p className="mt-2 text-sm text-[#6d6a61]">
+            Tente outra busca ou escolha outra categoria.
+          </p>
+        </div>
+      )}
+
+      {/* Resultados */}
+      {!loading && !error && featured.length > 0 && (
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {featured.map((restaurant) => (
+            <RestaurantCard
+              key={restaurant.id}
+              restaurant={restaurant}
+            />
+          ))}
+        </div>
+      )}
 
     </section>
   )

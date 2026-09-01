@@ -1,6 +1,6 @@
 import { Search, Bell, UserRound } from 'lucide-react'
 
-export default function Header() {
+export default function Header({ search, onSearchChange }) {
   return (
     <header className="w-full border-b border-[#ddd3c2]/70 bg-[#f7f3eb]">
       <div className="mx-auto flex h-[82px] max-w-[1440px] items-center gap-8 px-6 lg:px-10">
@@ -25,25 +25,32 @@ export default function Header() {
         {/* Busca */}
         <div className="hidden max-w-[500px] flex-1 md:block">
           <div className="flex h-11 items-center gap-3 rounded-full border border-[#d8cbb7] bg-[#faf8f3] px-5 transition focus-within:border-[#28351f]">
-            <Search size={19} strokeWidth={1.7} className="text-[#604936]" />
+
+            <Search
+              size={19}
+              strokeWidth={1.7}
+              className="text-[#604936]"
+            />
 
             <input
               type="text"
+              value={search}
+              onChange={(event) => onSearchChange(event.target.value)}
               placeholder="Buscar restaurantes, cozinhas ou pratos"
               className="w-full bg-transparent text-sm text-[#20231d] outline-none placeholder:text-[#777269]"
             />
+
           </div>
         </div>
 
         {/* Navegação */}
         <nav className="ml-auto hidden items-center gap-8 md:flex">
-          <button className="text-sm font-medium text-[#20231d] transition hover:text-[#28351f]">
+          <button className="text-sm font-semibold text-[#28351f]">
             Explorar
           </button>
 
-          <button className="relative text-sm font-semibold text-[#28351f]">
+          <button className="text-sm font-medium text-[#20231d] transition hover:text-[#28351f]">
             Timeline
-            <span className="absolute -bottom-[29px] left-0 h-[2px] w-full bg-[#28351f]" />
           </button>
 
           <button className="text-sm font-medium text-[#20231d] transition hover:text-[#28351f]">

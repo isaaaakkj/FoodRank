@@ -9,7 +9,7 @@ const categories = [
     { name: 'Vegetariana', icon: '🥗' },
   ]
   
-  export default function CategoryList() {
+  export default function CategoryList({ selectedCategory, onCategoryChange }) {
     return (
       <section className="mx-auto max-w-[1440px] pt-10">
   
@@ -29,23 +29,28 @@ const categories = [
           </button>
         </div>
   
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
-          {categories.map((category, index) => (
-            <button
-              key={category.name}
-              className={`flex min-w-fit items-center gap-2 rounded-full border px-5 py-3 text-sm font-medium transition ${
-                index === 0
-                  ? 'border-[#28351f] bg-[#28351f] text-[#f7f3eb]'
-                  : 'border-[#d8cbb7] bg-[#faf8f3] text-[#604936] hover:border-[#28351f] hover:text-[#28351f]'
-              }`}
-            >
-              <span className="text-base">
-                {category.icon}
-              </span>
+        <div className="flex gap-3 overflow-x-auto pb-2">
+          {categories.map((category) => {
+            const isSelected = selectedCategory === category.name
   
-              {category.name}
-            </button>
-          ))}
+            return (
+              <button
+                key={category.name}
+                onClick={() => onCategoryChange(category.name)}
+                className={`flex min-w-fit items-center gap-2 rounded-full border px-5 py-3 text-sm font-medium transition ${
+                  isSelected
+                    ? 'border-[#28351f] bg-[#28351f] text-[#f7f3eb]'
+                    : 'border-[#d8cbb7] bg-[#faf8f3] text-[#604936] hover:border-[#28351f] hover:text-[#28351f]'
+                }`}
+              >
+                <span className="text-base">
+                  {category.icon}
+                </span>
+  
+                {category.name}
+              </button>
+            )
+          })}
         </div>
   
       </section>
