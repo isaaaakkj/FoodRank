@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Heart, MapPin, Star } from 'lucide-react'
-
+import RestaurantMap from '../components/RestaurantMap'
 import { getRestaurants } from '../services/restaurants'
 
 export default function Restaurant() {
@@ -175,44 +175,34 @@ export default function Restaurant() {
           </section>
 
           {/* LOCALIZAÇÃO */}
-          <section className="overflow-hidden rounded-2xl border border-[#ddd3c2] bg-[#eee7d9]">
+<section className="overflow-hidden rounded-2xl border border-[#ddd3c2] bg-[#faf8f3]">
 
-            <div className="flex h-[280px] items-center justify-center">
+{restaurant.latitude && restaurant.longitude ? (
+  <RestaurantMap
+    latitude={restaurant.latitude}
+    longitude={restaurant.longitude}
+    name={restaurant.name}
+  />
+) : (
+  <div className="flex h-[320px] items-center justify-center bg-[#eee7d9]">
+    <div className="text-center">
+      <MapPin
+        size={38}
+        className="mx-auto text-[#604936]"
+      />
 
-              <div className="text-center">
+      <h3 className="mt-3 font-display text-xl font-semibold text-[#28351f]">
+        Localização
+      </h3>
 
-                <MapPin
-                  size={38}
-                  className="mx-auto text-[#604936]"
-                />
+      <p className="mt-1 text-sm text-[#6d6a61]">
+        Localização não disponível
+      </p>
+    </div>
+  </div>
+)}
 
-                <h3 className="mt-3 font-display text-xl font-semibold text-[#28351f]">
-                  Localização
-                </h3>
-
-                <p className="mt-1 text-sm text-[#6d6a61]">
-                  {restaurant.location}
-                </p>
-
-                <button
-                  onClick={() => {
-                    window.open(
-                      `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                        `${restaurant.name}, ${restaurant.location}, Campos do Jordão, SP`
-                      )}`,
-                      '_blank'
-                    )
-                  }}
-                  className="mt-4 rounded-full bg-[#28351f] px-5 py-2.5 text-sm font-semibold text-[#f7f3eb] transition hover:bg-[#4b5b3d]"
-                >
-                  Abrir mapa
-                </button>
-
-              </div>
-
-            </div>
-
-          </section>
+</section>
 
         </div>
 

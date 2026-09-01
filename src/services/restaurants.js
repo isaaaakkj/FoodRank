@@ -2,13 +2,12 @@ const OVERPASS_URL = 'https://overpass-api.de/api/interpreter'
 
 export async function getRestaurants() {
   const query = `
-    [out:json][timeout:25];
-    area["name"="Campos do Jordão"]["boundary"="administrative"]->.searchArea;
+    [out:json][timeout:30];
 
     (
-      nwr["amenity"="restaurant"](area.searchArea);
-      nwr["amenity"="cafe"](area.searchArea);
-      nwr["amenity"="fast_food"](area.searchArea);
+      nwr["amenity"="restaurant"]( -22.75, -45.65, -22.68, -45.55 );
+      nwr["amenity"="cafe"]( -22.75, -45.65, -22.68, -45.55 );
+      nwr["amenity"="fast_food"]( -22.75, -45.65, -22.68, -45.55 );
     );
 
     out center tags;
@@ -29,6 +28,17 @@ export async function getRestaurants() {
     .map((place) => ({
       id: place.id,
       name: place.tags.name,
+
+      latitude:
+        place.lat ??
+        place.center?.lat ??
+        null,
+
+      longitude:
+        place.lon ??
+        place.center?.lon ??
+        null,
+
       category: getCategory(place.tags),
       location: getLocation(place.tags),
       rating: '—',
@@ -39,6 +49,7 @@ export async function getRestaurants() {
 
 function getCategory(tags) {
   if (tags.amenity === 'cafe') return 'Café'
+
   if (tags.amenity === 'fast_food') return 'Fast Food'
 
   return tags.cuisine
@@ -47,54 +58,45 @@ function getCategory(tags) {
 }
 
 function formatCuisine(cuisine) {
-    const cuisineMap = {
-      brazilian: 'Brasileira',
-      brazilian_food: 'Brasileira',
-  
-      italian: 'Italiana',
-      italian_food: 'Italiana',
-  
-      japanese: 'Japonesa',
-      sushi: 'Japonesa',
-  
-      pizza: 'Pizzaria',
-  
-      burger: 'Hambúrguer',
-      hamburger: 'Hambúrguer',
-  
-      vegetarian: 'Vegetariana',
-      vegan: 'Vegetariana',
-  
-      steak_house: 'Carnes',
-      barbecue: 'Churrascaria',
-  
-      cafe: 'Café',
-      coffee_shop: 'Café',
-  
-      bakery: 'Padaria',
-      bakery_cafe: 'Café',
-  
-      mexican: 'Mexicana',
-      chinese: 'Chinesa',
-      french: 'Francesa',
-      seafood: 'Frutos do mar',
-    }
-  
-    const cuisines = cuisine
-      .toLowerCase()
-      .split(';')
-      .map((item) => item.trim())
-  
-    for (const item of cuisines) {
-      if (cuisineMap[item]) {
-        return cuisineMap[item]
-      }
-    }
-  
-    return cuisines[0]
-      ? cuisines[0].charAt(0).toUpperCase() + cuisines[0].slice(1)
-      : 'Restaurante'
+  const cuisineMap = {
+    brazilian: 'Brasileira',
+    brazilian_food: 'Brasileira',
+    italian: 'Italiana',
+    italian_food: 'Italiana',
+    japanese: 'Japonesa',
+    sushi: 'Japonesa',
+    pizza: 'Pizzaria',
+    burger: 'Hambúrguer',
+    hamburger: 'Hambúrguer',
+    vegetarian: 'Vegetariana',
+    vegan: 'Vegetariana',
+    steak_house: 'Carnes',
+    barbecue: 'Churrascaria',
+    cafe: 'Café',
+    coffee_shop: 'Café',
+    bakery: 'Padaria',
+    bakery_cafe: 'Café',
+    mexican: 'Mexicana',
+    chinese: 'Chinesa',
+    french: 'Francesa',
+    seafood: 'Frutos do mar',
   }
+
+  const cuisines = cuisine
+    .toLowerCase()
+    .split(';')
+    .map((item) => item.trim())
+
+  for (const item of cuisines) {
+    if (cuisineMap[item]) {
+      return cuisineMap[item]
+    }
+  }
+
+  return cuisines[0]
+    ? cuisines[0].charAt(0).toUpperCase() + cuisines[0].slice(1)
+    : 'Restaurante'
+}
 
 function getLocation(tags) {
   return (
@@ -106,6 +108,8 @@ function getLocation(tags) {
 
 function getPrice(tags) {
   if (tags.price_range) return tags.price_range
+
+  if (tags['payment:cash']) return '$$'
 
   return '$$'
 }
