@@ -1,6 +1,9 @@
 import { Heart, MapPin, Star } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 export default function RestaurantCard({ restaurant }) {
+  const navigate = useNavigate()
+  
   return (
     <article className="group overflow-hidden rounded-2xl border border-[#ded5c6] bg-[#faf8f3] transition duration-300 hover:-translate-y-1 hover:shadow-lg">
 
@@ -65,9 +68,12 @@ export default function RestaurantCard({ restaurant }) {
             {restaurant.price}
           </span>
 
-          <button className="text-sm font-semibold text-[#6b3434] transition hover:text-[#28351f]">
-            Ver restaurante →
-          </button>
+          <button
+  onClick={() => navigate(`/restaurant/${restaurant.id}`)}
+  className="text-sm font-semibold text-[#6b3434] transition hover:text-[#28351f]"
+>
+  Ver restaurante →
+</button>
 
         </div>
 
