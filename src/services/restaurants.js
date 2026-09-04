@@ -1,81 +1,239 @@
+const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search'
 const OVERPASS_URL = 'https://overpass-api.de/api/interpreter'
 
-export async function getRestaurants() {
+const restaurantsCache = {}
+const restaurantsPromise = {}
+
+export async function getRestaurants(
+  city = 'Campos do Jordão',
+  state = 'São Paulo'
+) {
+  const normalizedCity = city.trim().toLowerCase()
+  const normalizedState = state.trim().toLowerCase()
+
+  const cacheKey = `${normalizedCity}-${normalizedState}`
+
+  // Se já buscamos essa cidade, reutiliza os dados
+  if (restaurantsCache[cacheKey]) {
+    return restaurantsCache[cacheKey]
+  }
+
+  // Evita duas buscas iguais ao mesmo tempo
+  if (restaurantsPromise[cacheKey]) {
+    return restaurantsPromise[cacheKey]
+  }
+
+  restaurantsPromise[cacheKey] = searchRestaurants(
+    city,
+    state,
+    cacheKey
+  )
+
+  try {
+    return await restaurantsPromise[cacheKey]
+  } finally {
+    delete restaurantsPromise[cacheKey]
+  }
+}
+
+async function searchRestaurants(city, state, cacheKey) {
+  /*
+   * =====================================================
+   * 1. LOCALIZAR A CIDADE
+   * =====================================================
+   */
+
+  const params = new URLSearchParams({
+    q: `${city}, ${state}, Brasil`,
+    format: 'jsonv2',
+    countrycodes: 'br',
+    limit: '1',
+    addressdetails: '1',
+  })
+
+  const response = await fetch(
+    `${NOMINATIM_URL}?${params.toString()}`
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      'Não foi possível localizar a cidade.'
+    )
+  }
+
+  const locations = await response.json()
+
+  if (!locations.length) {
+    throw new Error(
+      `A cidade "${city}" não foi encontrada.`
+    )
+  }
+
+  const location = locations[0]
+
+  const latitude = Number(location.lat)
+  const longitude = Number(location.lon)
+
+  if (
+    Number.isNaN(latitude) ||
+    Number.isNaN(longitude)
+  ) {
+    throw new Error(
+      'A localização encontrada é inválida.'
+    )
+  }
+
+  /*
+   * =====================================================
+   * 2. BUSCAR RESTAURANTES PRÓXIMOS À CIDADE
+   * =====================================================
+   *
+   * 0.15 graus ≈ uma área de alguns quilômetros.
+   *
+   * Usamos node, way e relation para pegar:
+   * - restaurantes
+   * - cafés
+   * - fast food
+   */
+
+  const radius = 15000
+
   const query = `
     [out:json][timeout:30];
 
     (
-      nwr["amenity"="restaurant"]( -22.75, -45.65, -22.68, -45.55 );
-      nwr["amenity"="cafe"]( -22.75, -45.65, -22.68, -45.55 );
-      nwr["amenity"="fast_food"]( -22.75, -45.65, -22.68, -45.55 );
+      nwr["amenity"="restaurant"](around:${radius},${latitude},${longitude});
+      nwr["amenity"="cafe"](around:${radius},${latitude},${longitude});
+      nwr["amenity"="fast_food"](around:${radius},${latitude},${longitude});
     );
 
     out center tags;
   `
 
-  const response = await fetch(
+  const overpassResponse = await fetch(
     `${OVERPASS_URL}?data=${encodeURIComponent(query)}`
   )
 
-  if (!response.ok) {
-    throw new Error('Não foi possível buscar os restaurantes.')
+  if (!overpassResponse.ok) {
+    throw new Error(
+      'O serviço de restaurantes não respondeu.'
+    )
   }
 
-  const data = await response.json()
+  const data = await overpassResponse.json()
 
-  return data.elements
-    .filter((place) => place.tags?.name)
-    .map((place) => ({
-      id: place.id,
-      name: place.tags.name,
+  /*
+   * =====================================================
+   * 3. TRANSFORMAR OS DADOS DO OSM
+   * =====================================================
+   */
+
+  const restaurants = data.elements
+    .filter((item) => item.tags?.name)
+    .map((item) => ({
+      id: item.id,
+
+      name: item.tags.name,
 
       latitude:
-        place.lat ??
-        place.center?.lat ??
+        item.lat ??
+        item.center?.lat ??
         null,
 
       longitude:
-        place.lon ??
-        place.center?.lon ??
+        item.lon ??
+        item.center?.lon ??
         null,
 
-      category: getCategory(place.tags),
-      location: getLocation(place.tags),
+      category: getCategory(item.tags),
+
+      location: getLocation(
+        item.tags,
+        city,
+        state
+      ),
+
+      city,
+      state,
+
       rating: '—',
-      price: getPrice(place.tags),
-      image: getImage(place.tags),
+
+      price: getPrice(item.tags),
+
+      image: getImage(item.tags),
     }))
+
+  /*
+   * Remove possíveis restaurantes duplicados.
+   */
+  const uniqueRestaurants = Array.from(
+    new Map(
+      restaurants.map((restaurant) => [
+        restaurant.id,
+        restaurant,
+      ])
+    ).values()
+  )
+
+  restaurantsCache[cacheKey] = uniqueRestaurants
+
+  return uniqueRestaurants
 }
+
+
+/* =====================================================
+   CATEGORIA
+   ===================================================== */
 
 function getCategory(tags) {
-  if (tags.amenity === 'cafe') return 'Café'
+  if (tags.amenity === 'cafe') {
+    return 'Café'
+  }
 
-  if (tags.amenity === 'fast_food') return 'Fast Food'
+  if (tags.amenity === 'fast_food') {
+    return 'Fast Food'
+  }
 
-  return tags.cuisine
-    ? formatCuisine(tags.cuisine)
-    : 'Restaurante'
+  if (tags.cuisine) {
+    return formatCuisine(tags.cuisine)
+  }
+
+  return 'Restaurante'
 }
+
+
+/* =====================================================
+   COZINHA
+   ===================================================== */
 
 function formatCuisine(cuisine) {
   const cuisineMap = {
     brazilian: 'Brasileira',
     brazilian_food: 'Brasileira',
+
     italian: 'Italiana',
     italian_food: 'Italiana',
+
     japanese: 'Japonesa',
     sushi: 'Japonesa',
+
     pizza: 'Pizzaria',
+
     burger: 'Hambúrguer',
     hamburger: 'Hambúrguer',
+
     vegetarian: 'Vegetariana',
     vegan: 'Vegetariana',
+
     steak_house: 'Carnes',
     barbecue: 'Churrascaria',
+
     cafe: 'Café',
     coffee_shop: 'Café',
+
     bakery: 'Padaria',
     bakery_cafe: 'Café',
+
     mexican: 'Mexicana',
     chinese: 'Chinesa',
     french: 'Francesa',
@@ -94,25 +252,41 @@ function formatCuisine(cuisine) {
   }
 
   return cuisines[0]
-    ? cuisines[0].charAt(0).toUpperCase() + cuisines[0].slice(1)
+    ? cuisines[0].charAt(0).toUpperCase() +
+        cuisines[0].slice(1)
     : 'Restaurante'
 }
 
-function getLocation(tags) {
-  return (
-    tags['addr:suburb'] ||
-    tags['addr:street'] ||
-    'Campos do Jordão, SP'
-  )
+
+/* =====================================================
+   LOCALIZAÇÃO
+   ===================================================== */
+
+function getLocation(tags, city, state) {
+  if (tags['addr:street']) {
+    return `${tags['addr:street']}, ${city} - ${state}`
+  }
+
+  return `${city} - ${state}`
 }
 
-function getPrice(tags) {
-  if (tags.price_range) return tags.price_range
 
-  if (tags['payment:cash']) return '$$'
+/* =====================================================
+   PREÇO
+   ===================================================== */
+
+function getPrice(tags) {
+  if (tags.price_range) {
+    return tags.price_range
+  }
 
   return '$$'
 }
+
+
+/* =====================================================
+   IMAGEM
+   ===================================================== */
 
 function getImage(tags) {
   return (

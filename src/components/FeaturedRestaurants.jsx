@@ -3,8 +3,10 @@ import RestaurantCard from './RestaurantCard'
 import useRestaurants from '../hooks/useRestaurants'
 
 export default function FeaturedRestaurants({ filters }) {
-  const { restaurants, loading, error } = useRestaurants()
-
+  const { restaurants, loading, error } = useRestaurants(
+    filters.location.city
+  )
+  
   const filteredRestaurants = useMemo(() => {
     const searchText = filters.search.trim().toLowerCase()
 

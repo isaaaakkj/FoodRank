@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Heart, MapPin, Star } from 'lucide-react'
+
 import RestaurantMap from '../components/RestaurantMap'
 import { getRestaurants } from '../services/restaurants'
 
@@ -10,19 +11,29 @@ export default function Restaurant() {
 
   const [restaurant, setRestaurant] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     async function loadRestaurant() {
       try {
+        setLoading(true)
+        setError(false)
+
         const restaurants = await getRestaurants()
 
         const foundRestaurant = restaurants.find(
           (item) => String(item.id) === String(id)
         )
 
+        if (!foundRestaurant) {
+          setRestaurant(null)
+          return
+        }
+
         setRestaurant(foundRestaurant)
       } catch (error) {
-        console.error(error)
+        console.error('Erro ao carregar restaurante:', error)
+        setError(true)
       } finally {
         setLoading(false)
       }
@@ -37,6 +48,27 @@ export default function Restaurant() {
         <p className="text-sm text-[#6d6a61]">
           Carregando restaurante...
         </p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-[#f7f3eb] px-6 text-center">
+        <h1 className="font-display text-3xl font-semibold text-[#28351f]">
+          Não foi possível carregar
+        </h1>
+
+        <p className="mt-2 text-sm text-[#6d6a61]">
+          O serviço de restaurantes não respondeu. Tente novamente.
+        </p>
+
+        <button
+          onClick={() => navigate('/')}
+          className="mt-6 rounded-full bg-[#28351f] px-6 py-3 text-sm font-semibold text-[#f7f3eb]"
+        >
+          Voltar para explorar
+        </button>
       </div>
     )
   }
@@ -65,7 +97,6 @@ export default function Restaurant() {
   return (
     <div className="min-h-screen bg-[#f7f3eb]">
 
-      {/* HEADER */}
       <header className="border-b border-[#ddd3c2] bg-[#f7f3eb]">
         <div className="mx-auto flex h-[82px] max-w-[1440px] items-center px-6 lg:px-10">
 
@@ -175,34 +206,34 @@ export default function Restaurant() {
           </section>
 
           {/* LOCALIZAÇÃO */}
-<section className="overflow-hidden rounded-2xl border border-[#ddd3c2] bg-[#faf8f3]">
+          <section className="overflow-hidden rounded-2xl border border-[#ddd3c2] bg-[#faf8f3]">
 
-{restaurant.latitude && restaurant.longitude ? (
-  <RestaurantMap
-    latitude={restaurant.latitude}
-    longitude={restaurant.longitude}
-    name={restaurant.name}
-  />
-) : (
-  <div className="flex h-[320px] items-center justify-center bg-[#eee7d9]">
-    <div className="text-center">
-      <MapPin
-        size={38}
-        className="mx-auto text-[#604936]"
-      />
+            {restaurant.latitude && restaurant.longitude ? (
+              <RestaurantMap
+                latitude={restaurant.latitude}
+                longitude={restaurant.longitude}
+                name={restaurant.name}
+              />
+            ) : (
+              <div className="flex h-[320px] items-center justify-center bg-[#eee7d9]">
+                <div className="text-center">
+                  <MapPin
+                    size={38}
+                    className="mx-auto text-[#604936]"
+                  />
 
-      <h3 className="mt-3 font-display text-xl font-semibold text-[#28351f]">
-        Localização
-      </h3>
+                  <h3 className="mt-3 font-display text-xl font-semibold text-[#28351f]">
+                    Localização
+                  </h3>
 
-      <p className="mt-1 text-sm text-[#6d6a61]">
-        Localização não disponível
-      </p>
-    </div>
-  </div>
-)}
+                  <p className="mt-1 text-sm text-[#6d6a61]">
+                    Localização não disponível
+                  </p>
+                </div>
+              </div>
+            )}
 
-</section>
+          </section>
 
         </div>
 

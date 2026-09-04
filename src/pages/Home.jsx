@@ -11,12 +11,31 @@ export default function Home() {
   const [search, setSearch] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('Todos')
 
+  const [location, setLocation] = useState({
+    state: 'São Paulo',
+    city: 'Campos do Jordão',
+  })
+
+  const [hasSearchedLocation, setHasSearchedLocation] = useState(false)
+
+  function handleLocationSearch(newLocation) {
+    setLocation(newLocation)
+    setHasSearchedLocation(true)
+  }
+
   const filters = useMemo(() => {
     return {
       search,
       category: selectedCategory,
+      location,
+      hasSearchedLocation,
     }
-  }, [search, selectedCategory])
+  }, [
+    search,
+    selectedCategory,
+    location,
+    hasSearchedLocation,
+  ])
 
   return (
     <div className="min-h-screen bg-[#f7f3eb]">
@@ -28,14 +47,18 @@ export default function Home() {
 
       <main className="px-4 pb-16 lg:px-6">
 
-        <Hero />
+        <Hero
+          onLocationSearch={handleLocationSearch}
+        />
 
         <CategoryList
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
         />
 
-        <FeaturedRestaurants filters={filters} />
+        <FeaturedRestaurants
+          filters={filters}
+        />
 
         <TimelineSection />
 
