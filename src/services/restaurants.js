@@ -13,12 +13,10 @@ export async function getRestaurants(
 
   const cacheKey = `${normalizedCity}-${normalizedState}`
 
-  // Se já buscamos essa cidade, reutiliza os dados
   if (restaurantsCache[cacheKey]) {
     return restaurantsCache[cacheKey]
   }
 
-  // Evita duas buscas iguais ao mesmo tempo
   if (restaurantsPromise[cacheKey]) {
     return restaurantsPromise[cacheKey]
   }
@@ -37,12 +35,6 @@ export async function getRestaurants(
 }
 
 async function searchRestaurants(city, state, cacheKey) {
-  /*
-   * =====================================================
-   * 1. LOCALIZAR A CIDADE
-   * =====================================================
-   */
-
   const params = new URLSearchParams({
     q: `${city}, ${state}, Brasil`,
     format: 'jsonv2',
@@ -63,6 +55,8 @@ async function searchRestaurants(city, state, cacheKey) {
 
   const locations = await response.json()
 
+  console.log('NOMINATIM:', locations)
+
   if (!locations.length) {
     throw new Error(
       `A cidade "${city}" não foi encontrada.`
@@ -82,19 +76,6 @@ async function searchRestaurants(city, state, cacheKey) {
       'A localização encontrada é inválida.'
     )
   }
-
-  /*
-   * =====================================================
-   * 2. BUSCAR RESTAURANTES PRÓXIMOS À CIDADE
-   * =====================================================
-   *
-   * 0.15 graus ≈ uma área de alguns quilômetros.
-   *
-   * Usamos node, way e relation para pegar:
-   * - restaurantes
-   * - cafés
-   * - fast food
-   */
 
   const radius = 15000
 
@@ -122,11 +103,7 @@ async function searchRestaurants(city, state, cacheKey) {
 
   const data = await overpassResponse.json()
 
-  /*
-   * =====================================================
-   * 3. TRANSFORMAR OS DADOS DO OSM
-   * =====================================================
-   */
+  console.log('OVERPASS:', data)
 
   const restaurants = data.elements
     .filter((item) => item.tags?.name)
@@ -163,9 +140,6 @@ async function searchRestaurants(city, state, cacheKey) {
       image: getImage(item.tags),
     }))
 
-  /*
-   * Remove possíveis restaurantes duplicados.
-   */
   const uniqueRestaurants = Array.from(
     new Map(
       restaurants.map((restaurant) => [
@@ -179,11 +153,6 @@ async function searchRestaurants(city, state, cacheKey) {
 
   return uniqueRestaurants
 }
-
-
-/* =====================================================
-   CATEGORIA
-   ===================================================== */
 
 function getCategory(tags) {
   if (tags.amenity === 'cafe') {
@@ -200,11 +169,6 @@ function getCategory(tags) {
 
   return 'Restaurante'
 }
-
-
-/* =====================================================
-   COZINHA
-   ===================================================== */
 
 function formatCuisine(cuisine) {
   const cuisineMap = {
@@ -257,11 +221,6 @@ function formatCuisine(cuisine) {
     : 'Restaurante'
 }
 
-
-/* =====================================================
-   LOCALIZAÇÃO
-   ===================================================== */
-
 function getLocation(tags, city, state) {
   if (tags['addr:street']) {
     return `${tags['addr:street']}, ${city} - ${state}`
@@ -270,11 +229,6 @@ function getLocation(tags, city, state) {
   return `${city} - ${state}`
 }
 
-
-/* =====================================================
-   PREÇO
-   ===================================================== */
-
 function getPrice(tags) {
   if (tags.price_range) {
     return tags.price_range
@@ -282,11 +236,6 @@ function getPrice(tags) {
 
   return '$$'
 }
-
-
-/* =====================================================
-   IMAGEM
-   ===================================================== */
 
 function getImage(tags) {
   return (
