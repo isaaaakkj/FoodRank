@@ -1,3 +1,4 @@
+
 import { useMemo, useState } from 'react'
 
 import Header from '../components/Header'
@@ -12,8 +13,8 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState('Todos')
 
   const [location, setLocation] = useState({
-    state: 'São Paulo',
-    city: 'Campos do Jordão',
+    state: '',
+    city: '',
   })
 
   const [hasSearchedLocation, setHasSearchedLocation] = useState(false)
@@ -23,49 +24,34 @@ export default function Home() {
     setHasSearchedLocation(true)
   }
 
-  const filters = useMemo(() => {
-    return {
-      search,
-      category: selectedCategory,
-      location,
-      hasSearchedLocation,
-    }
-  }, [
+  const filters = useMemo(() => ({
     search,
-    selectedCategory,
+    category: selectedCategory,
     location,
     hasSearchedLocation,
-  ])
+  }), [search, selectedCategory, location, hasSearchedLocation])
 
   return (
     <div className="min-h-screen bg-[#f7f3eb]">
-
       <Header
         search={search}
         onSearchChange={setSearch}
       />
 
       <main className="px-4 pb-16 lg:px-6">
-
-        <Hero
-          onLocationSearch={handleLocationSearch}
-        />
+        <Hero onLocationSearch={handleLocationSearch} />
 
         <CategoryList
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
         />
 
-        <FeaturedRestaurants
-          filters={filters}
-        />
+        <FeaturedRestaurants filters={filters} />
 
         <TimelineSection />
 
         <ReviewForm />
-
       </main>
-
     </div>
   )
 }

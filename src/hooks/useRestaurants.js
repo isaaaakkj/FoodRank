@@ -1,9 +1,10 @@
+
 import { useEffect, useState } from 'react'
 import { getRestaurants } from '../services/restaurants'
 
-export default function useRestaurants(city, state) {
+export default function useRestaurants(city, state, enabled = true) {
   const [restaurants, setRestaurants] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
   useEffect(() => {
@@ -13,7 +14,6 @@ export default function useRestaurants(city, state) {
       try {
         setLoading(true)
         setError(null)
-        setRestaurants([])
 
         const data = await getRestaurants(city, state)
 
@@ -24,10 +24,8 @@ export default function useRestaurants(city, state) {
         console.error('Erro ao buscar restaurantes:', err)
 
         if (!cancelled) {
-          setRestaurants([])
           setError(
-            err.message ||
-              'Não foi possível buscar restaurantes.'
+            err.message || 'Não foi possível buscar restaurantes.'
           )
         }
       } finally {
@@ -37,17 +35,18 @@ export default function useRestaurants(city, state) {
       }
     }
 
-    if (city && state) {
+    if (enabled && city && state) {
       loadRestaurants()
     } else {
-      setRestaurants([])
       setLoading(false)
+      setError(null)
+      setRestaurants([])
     }
 
     return () => {
       cancelled = true
     }
-  }, [city, state])
+  }, [city, state, enabled])
 
   return {
     restaurants,

@@ -1,3 +1,5 @@
+
+
 import { useMemo, useState, useEffect } from 'react'
 import RestaurantCard from './RestaurantCard'
 import useRestaurants from '../hooks/useRestaurants'
@@ -5,7 +7,8 @@ import useRestaurants from '../hooks/useRestaurants'
 export default function FeaturedRestaurants({ filters }) {
   const { restaurants, loading, error } = useRestaurants(
     filters.location.city,
-    filters.location.state
+    filters.location.state,
+    filters.hasSearchedLocation
   )
 
   const [visibleCount, setVisibleCount] = useState(8)
@@ -76,12 +79,10 @@ export default function FeaturedRestaurants({ filters }) {
     visibleCount
   )
 
-  const hasMore =
-    visibleCount < filteredRestaurants.length
+  const hasMore = visibleCount < filteredRestaurants.length
 
   return (
     <section className="mx-auto max-w-[1440px] py-12">
-
       <div className="mb-7 flex items-end justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a88b54]">
@@ -114,7 +115,9 @@ export default function FeaturedRestaurants({ filters }) {
       {loading && (
         <div className="rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-10 text-center">
           <p className="text-sm text-[#6d6a61]">
-            Procurando restaurantes...
+            {restaurants.length > 0
+              ? 'Atualizando restaurantes...'
+              : 'Procurando restaurantes...'}
           </p>
         </div>
       )}
@@ -128,57 +131,56 @@ export default function FeaturedRestaurants({ filters }) {
           <p className="mt-2 text-sm text-[#6d6a61]">
             {error}
           </p>
+
+          <p className="mt-2 text-sm text-[#6d6a61]">
+            Tente novamente em alguns instantes.
+          </p>
         </div>
       )}
 
-      {!loading &&
-        !error &&
-        filteredRestaurants.length === 0 && (
-          <div className="rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-10 text-center">
-            <p className="font-display text-xl text-[#28351f]">
-              Nenhum restaurante encontrado
-            </p>
+      {!loading && !error && filteredRestaurants.length === 0 && (
+        <div className="rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-10 text-center">
+          <p className="font-display text-xl text-[#28351f]">
+            Nenhum restaurante encontrado
+          </p>
 
-            <p className="mt-2 text-sm text-[#6d6a61]">
-              Tente outra busca ou escolha outra categoria.
-            </p>
+          <p className="mt-2 text-sm text-[#6d6a61]">
+            Tente outra busca ou escolha outra categoria.
+          </p>
+        </div>
+      )}
+
+      {!error && visibleRestaurants.length > 0 && (
+        <>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {visibleRestaurants.map((restaurant) => (
+              <RestaurantCard
+                key={restaurant.id}
+                restaurant={restaurant}
+              />
+            ))}
           </div>
-        )}
 
-      {!loading &&
-        !error &&
-        visibleRestaurants.length > 0 && (
-          <>
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {visibleRestaurants.map((restaurant) => (
-                <RestaurantCard
-                  key={restaurant.id}
-                  restaurant={restaurant}
-                />
-              ))}
+          {hasMore && (
+            <div className="mt-10 flex justify-center">
+              <button
+                onClick={() =>
+                  setVisibleCount((current) => current + 8)
+                }
+                className="rounded-full border border-[#28351f] bg-[#28351f] px-7 py-3 text-sm font-semibold text-[#f7f3eb] transition hover:bg-[#4b5b3d]"
+              >
+                Ver mais restaurantes
+              </button>
             </div>
+          )}
 
-            {hasMore && (
-              <div className="mt-10 flex justify-center">
-                <button
-                  onClick={() =>
-                    setVisibleCount((current) => current + 8)
-                  }
-                  className="rounded-full border border-[#28351f] bg-[#28351f] px-7 py-3 text-sm font-semibold text-[#f7f3eb] transition hover:bg-[#4b5b3d]"
-                >
-                  Ver mais restaurantes
-                </button>
-              </div>
-            )}
-
-            {!hasMore && filteredRestaurants.length > 8 && (
-              <p className="mt-8 text-center text-sm text-[#6d6a61]">
-                Você chegou ao fim dos resultados.
-              </p>
-            )}
-          </>
-        )}
-
+          {!hasMore && filteredRestaurants.length > 8 && (
+            <p className="mt-8 text-center text-sm text-[#6d6a61]">
+              Você chegou ao fim dos resultados.
+            </p>
+          )}
+        </>
+      )}
     </section>
   )
 }
