@@ -1,14 +1,7 @@
 
-const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search'
-
-const OVERPASS_SERVERS = [
-  'https://overpass-api.de/api/interpreter',
-  'https://overpass.kumi.systems/api/interpreter',
-]
+import { supabase } from './supabase'
 
 const CACHE_DURATION = 6 * 60 * 60 * 1000
-const GEO_CACHE_DURATION = 30 * 24 * 60 * 60 * 1000
-const REQUEST_TIMEOUT = 30000
 
 const memoryCache = new Map()
 const pendingRequests = new Map()
@@ -46,36 +39,6 @@ function saveCache(key, data, duration) {
   }
 }
 
-async function fetchWithTimeout(url, options = {}) {
-  const controller = new AbortController()
-
-  const timeout = setTimeout(
-    () => controller.abort(),
-    REQUEST_TIMEOUT
-  )
-
-  try {
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-    })
-
-    if (!response.ok) {
-      throw new Error(`Erro HTTP ${response.status}`)
-    }
-
-    return response
-  } catch (error) {
-    if (error.name === 'AbortError') {
-      throw new Error('O servidor demorou para responder.')
-    }
-
-    throw error
-  } finally {
-    clearTimeout(timeout)
-  }
-}
-
 export async function getRestaurants(city, state) {
   if (!city?.trim() || !state?.trim()) {
     return []
@@ -83,7 +46,9 @@ export async function getRestaurants(city, state) {
 
   const normalizedCity = city.trim().toLowerCase()
   const normalizedState = state.trim().toLowerCase()
-  const cacheKey = `foodrank-restaurants-${normalizedCity}-${normalizedState}`
+
+  // A versão 2 evita reutilizar dados antigos do Overpass.
+  const cacheKey = `foodrank-restaurants-v2-${normalizedCity}-${normalizedState}`
 
   const memoryResult = memoryCache.get(cacheKey)
 
@@ -109,7 +74,10 @@ export async function getRestaurants(city, state) {
     return pendingRequests.get(cacheKey)
   }
 
-  const request = searchRestaurants(city.trim(), state.trim())
+  const request = searchRestaurants(
+    city.trim(),
+    state.trim()
+  )
     .then((restaurants) => {
       memoryCache.set(cacheKey, {
         timestamp: Date.now(),
@@ -129,200 +97,34 @@ export async function getRestaurants(city, state) {
   return request
 }
 
-async function getCityCoordinates(city, state) {
-  const cacheKey = `foodrank-coordinates-${city.toLowerCase()}-${state.toLowerCase()}`
-
-  const savedCoordinates = readCache(cacheKey)
-
-  if (savedCoordinates) {
-    return savedCoordinates
-  }
-
-  const params = new URLSearchParams({
-    q: `${city}, ${state}, Brasil`,
-    format: 'jsonv2',
-    countrycodes: 'br',
-    limit: '1',
-  })
-
-  const response = await fetchWithTimeout(
-    `${NOMINATIM_URL}?${params.toString()}`,
+async function searchRestaurants(city, state) {
+  const { data, error } = await supabase.functions.invoke(
+    'get-restaurants',
     {
-      headers: {
-        Accept: 'application/json',
+      body: {
+        city,
+        state,
       },
     }
   )
 
-  const locations = await response.json()
+  if (error) {
+    console.error('Erro ao consultar a Edge Function:', error)
 
-  if (!locations.length) {
-    throw new Error(`A cidade "${city}" não foi encontrada.`)
+    throw new Error(
+      error.message || 'Não foi possível buscar os restaurantes.'
+    )
   }
 
-  const coordinates = {
-    latitude: Number(locations[0].lat),
-    longitude: Number(locations[0].lon),
+  if (data?.error) {
+    throw new Error(data.error)
   }
 
-  if (
-    !Number.isFinite(coordinates.latitude) ||
-    !Number.isFinite(coordinates.longitude)
-  ) {
-    throw new Error('A localização encontrada é inválida.')
+  if (!Array.isArray(data?.restaurants)) {
+    throw new Error(
+      'A resposta do servidor não contém uma lista válida de restaurantes.'
+    )
   }
 
-  saveCache(cacheKey, coordinates, GEO_CACHE_DURATION)
-
-  return coordinates
-}
-
-async function searchOverpass(latitude, longitude) {
-  const radius = 5000
-
-  const query = `
-  [out:json][timeout:25];
-
-  (
-    nwr["amenity"="restaurant"]["name"](around:${radius},${latitude},${longitude});
-    nwr["amenity"="cafe"]["name"](around:${radius},${latitude},${longitude});
-    nwr["amenity"="fast_food"]["name"](around:${radius},${latitude},${longitude});
-  );
-
-  out center tags;
-`
-
-  let lastError
-
-  for (const server of OVERPASS_SERVERS) {
-    try {
-      const response = await fetchWithTimeout(server, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-        },
-        body: new URLSearchParams({ data: query }),
-      })
-
-      const data = await response.json()
-
-      if (!Array.isArray(data.elements)) {
-        throw new Error('Resposta inválida do serviço de restaurantes.')
-      }
-
-      return data.elements
-    } catch (error) {
-      lastError = error
-    }
-  }
-
-  throw lastError || new Error('Os servidores de restaurantes estão indisponíveis.')
-}
-
-async function searchRestaurants(city, state) {
-  const { latitude, longitude } = await getCityCoordinates(city, state)
-
-  const elements = await searchOverpass(latitude, longitude)
-
-  const restaurants = elements
-    .filter((item) => item.tags?.name)
-    .map((item) => ({
-      id: `${item.type}-${item.id}`,
-      osmId: item.id,
-      osmType: item.type,
-
-      name: item.tags.name,
-
-      latitude: item.lat ?? item.center?.lat ?? null,
-      longitude: item.lon ?? item.center?.lon ?? null,
-
-      category: getCategory(item.tags),
-      location: getLocation(item.tags, city, state),
-
-      city,
-      state,
-
-      externalRating: null,
-      externalRatingCount: null,
-      foodrankRating: null,
-      rating: null,
-
-      price: getPrice(item.tags),
-      image: getImage(item.tags),
-    }))
-
-  return Array.from(
-    new Map(
-      restaurants.map((restaurant) => [
-        restaurant.id,
-        restaurant,
-      ])
-    ).values()
-  )
-}
-
-function getCategory(tags) {
-  if (tags.amenity === 'cafe') return 'Café'
-  if (tags.amenity === 'fast_food') return 'Fast Food'
-  if (tags.cuisine) return formatCuisine(tags.cuisine)
-
-  return 'Restaurante'
-}
-
-function formatCuisine(cuisine) {
-  const cuisineMap = {
-    brazilian: 'Brasileira',
-    brazilian_food: 'Brasileira',
-    italian: 'Italiana',
-    italian_food: 'Italiana',
-    japanese: 'Japonesa',
-    sushi: 'Japonesa',
-    pizza: 'Pizzaria',
-    burger: 'Hambúrguer',
-    hamburger: 'Hambúrguer',
-    vegetarian: 'Vegetariana',
-    vegan: 'Vegetariana',
-    steak_house: 'Carnes',
-    barbecue: 'Churrascaria',
-    cafe: 'Café',
-    coffee_shop: 'Café',
-    bakery: 'Padaria',
-    bakery_cafe: 'Café',
-    mexican: 'Mexicana',
-    chinese: 'Chinesa',
-    french: 'Francesa',
-    seafood: 'Frutos do mar',
-  }
-
-  const cuisines = cuisine
-    .toLowerCase()
-    .split(';')
-    .map((item) => item.trim())
-
-  for (const item of cuisines) {
-    if (cuisineMap[item]) return cuisineMap[item]
-  }
-
-  return cuisines[0]
-    ? cuisines[0].charAt(0).toUpperCase() + cuisines[0].slice(1)
-    : 'Restaurante'
-}
-
-function getLocation(tags, city, state) {
-  if (tags['addr:street']) {
-    return `${tags['addr:street']}, ${city} - ${state}`
-  }
-
-  return `${city} - ${state}`
-}
-
-function getPrice(tags) {
-  return tags.price_range || '$$'
-}
-
-function getImage(tags) {
-  return (
-    tags.image ||
-    'https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=900&q=80'
-  )
+  return data.restaurants
 }

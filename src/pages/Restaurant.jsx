@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Heart, MapPin, Star } from 'lucide-react'
 
 import RestaurantMap from '../components/RestaurantMap'
@@ -8,39 +8,57 @@ import { getRestaurants } from '../services/restaurants'
 export default function Restaurant() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+
+  const city = searchParams.get('city')
+  const state = searchParams.get('state')
 
   const [restaurant, setRestaurant] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
   useEffect(() => {
+    let cancelled = false
+
     async function loadRestaurant() {
       try {
         setLoading(true)
         setError(false)
+        setRestaurant(null)
 
-        const restaurants = await getRestaurants()
+        if (!city || !state) {
+          throw new Error('Cidade e estado não informados.')
+        }
+
+        const restaurants = await getRestaurants(city, state)
+
+        if (cancelled) return
 
         const foundRestaurant = restaurants.find(
           (item) => String(item.id) === String(id)
         )
 
-        if (!foundRestaurant) {
-          setRestaurant(null)
-          return
-        }
+        setRestaurant(foundRestaurant || null)
 
-        setRestaurant(foundRestaurant)
-      } catch (error) {
-        console.error('Erro ao carregar restaurante:', error)
-        setError(true)
+      } catch (err) {
+        console.error('Erro ao carregar restaurante:', err)
+
+        if (!cancelled) {
+          setError(true)
+        }
       } finally {
-        setLoading(false)
+        if (!cancelled) {
+          setLoading(false)
+        }
       }
     }
 
     loadRestaurant()
-  }, [id])
+
+    return () => {
+      cancelled = true
+    }
+  }, [id, city, state])
 
   if (loading) {
     return (
@@ -60,7 +78,7 @@ export default function Restaurant() {
         </h1>
 
         <p className="mt-2 text-sm text-[#6d6a61]">
-          O serviço de restaurantes não respondeu. Tente novamente.
+          Não conseguimos recuperar os dados deste restaurante.
         </p>
 
         <button
@@ -117,7 +135,6 @@ export default function Restaurant() {
 
       <main className="mx-auto max-w-[1200px] px-4 py-8 lg:px-6">
 
-        {/* IMAGEM */}
         <div className="relative h-[320px] overflow-hidden rounded-2xl md:h-[440px]">
 
           <img
@@ -135,7 +152,6 @@ export default function Restaurant() {
 
         </div>
 
-        {/* INFORMAÇÕES */}
         <section className="py-8">
 
           <div className="flex flex-col justify-between gap-5 md:flex-row">
@@ -175,7 +191,7 @@ export default function Restaurant() {
 
               <div>
                 <strong className="text-lg text-[#604936]">
-                  {restaurant.rating}
+                  {restaurant.rating ?? '—'}
                 </strong>
 
                 <p className="text-xs text-[#6d6a61]">
@@ -189,7 +205,6 @@ export default function Restaurant() {
 
         </section>
 
-        {/* CONTEÚDO */}
         <div className="grid gap-8 lg:grid-cols-[1.4fr_0.8fr]">
 
           <section className="rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-6 md:p-8">
@@ -199,16 +214,15 @@ export default function Restaurant() {
             </h2>
 
             <p className="mt-4 leading-7 text-[#6d6a61]">
-              Conheça este restaurante em Campos do Jordão e descubra
+              Conheça este restaurante em {restaurant.city} e descubra
               uma nova experiência gastronômica.
             </p>
 
           </section>
 
-          {/* LOCALIZAÇÃO */}
           <section className="overflow-hidden rounded-2xl border border-[#ddd3c2] bg-[#faf8f3]">
 
-            {restaurant.latitude && restaurant.longitude ? (
+            {restaurant.latitude != null && restaurant.longitude != null ? (
               <RestaurantMap
                 latitude={restaurant.latitude}
                 longitude={restaurant.longitude}
