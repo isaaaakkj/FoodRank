@@ -5,16 +5,10 @@ import Restaurant from '../pages/Restaurant'
 
 export default function AppRoutes() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
-
         <Route path="/" element={<Home />} />
-
-        <Route
-          path="/restaurant/:id"
-          element={<Restaurant />}
-        />
-
+        <Route path="/restaurant/:id" element={<Restaurant />} />
       </Routes>
     </BrowserRouter>
   )
