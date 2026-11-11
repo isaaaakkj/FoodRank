@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Send, Star } from 'lucide-react'
 import useRestaurants from '../hooks/useRestaurants'
-import Turnstile, { isTurnstileConfigured } from './Turnstile'
+import Turnstile from './Turnstile'
+import { isTurnstileConfigured } from '../services/turnstileConfig'
 import { submitReview } from '../services/reviews'
 
 export default function ReviewForm({ location, enabled = false }) {
