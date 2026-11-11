@@ -75,13 +75,13 @@ Deno.serve(async (request) => {
     })
     const { error } = await supabase.from('reviews').insert({
       restaurant_id, restaurant_name, city, state, author_name,
-      comment, rating, status: 'pending',
+      comment, rating, status: 'approved',
     })
     if (error) {
       console.error('review insert failed', error.code)
       return json({ error: 'Não foi possível enviar a avaliação.' }, 500, origin)
     }
-    return json({ success: true, message: 'Avaliação recebida e aguardando moderação.' }, 201, origin)
+    return json({ success: true, message: 'Avaliação publicada com sucesso.' }, 201, origin)
   } catch {
     return json({ error: 'Serviço temporariamente indisponível.' }, 503, origin)
   }

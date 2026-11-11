@@ -36,7 +36,7 @@ export default function ReviewForm({ location, enabled = false }) {
         rating,
         comment: comment.trim(),
       }, token)
-      setNotice(response.message || 'Avaliação recebida e aguardando moderação.')
+      setNotice(response.message || 'Avaliação publicada com sucesso.')
       setName('')
       setRestaurantId('')
       setRating(0)
@@ -56,7 +56,7 @@ export default function ReviewForm({ location, enabled = false }) {
         <div className="mb-7">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a88b54]">Sua opinião importa</p>
           <h2 id="review-title" className="mt-1 font-display text-3xl font-semibold text-[#28351f]">Deixe sua avaliação</h2>
-          <p className="mt-2 text-sm text-[#6d6a61]">Sua avaliação será enviada para moderação e só aparecerá publicamente depois de aprovada. Use um apelido, não informe dados pessoais.</p>
+          <p className="mt-2 text-sm text-[#6d6a61]">Sua avaliação será publicada após o envio e a verificação anti-bot. Use um apelido e não informe dados pessoais.</p>
         </div>
         {notice && <p role="status" className="mb-4 text-sm text-[#604936]">{notice}</p>}
         <form onSubmit={handleSubmit} className="space-y-5">
