@@ -5,7 +5,7 @@
 - A busca por restaurantes usa a Edge Function `get-restaurants` e mantém sua estratégia atual de cache.
 - O novo recurso de avaliações usa a tabela `public.reviews` (comentários, apelido, nota, restaurante e data).
 - Apenas avaliações com `status = 'approved'` podem ser lidas pelos visitantes.
-- Comentários enviados entram como `pending`; não são publicados automaticamente.
+- Comentários enviados pela Edge Function são gravados como `approved` e ficam disponíveis imediatamente nas consultas públicas, sem aprovação manual.
 - Favoritos continuam armazenados **somente no navegador**, sem login e sem perfil compartilhado. Isso evita armazenar identificadores pessoais desnecessários.
 
 ## 1. Criar tabela no Supabase (obrigatório)
@@ -40,9 +40,9 @@ supabase secrets set TURNSTILE_SECRET_KEY=SUA_CHAVE_PRIVADA
 supabase functions deploy submit-review --no-verify-jwt
 ```
 
-**Não adicione nenhuma chave privada ao código ou ao arquivo `.env` do frontend.** A Edge Function usa as credenciais server-side gerenciadas pelo Supabase. O endpoint permite apenas origens conhecidas, valida o token Turnstile com Cloudflare e grava comentários com status pendente.
+**Não adicione nenhuma chave privada ao código ou ao arquivo `.env` do frontend.** A Edge Function usa as credenciais server-side gerenciadas pelo Supabase. O endpoint permite apenas origens conhecidas, valida o token Turnstile com Cloudflare e grava comentários diretamente com status `approved` após a verificação anti-bot.
 
-O modo `--no-verify-jwt` permite o uso sem login. Ele não substitui a proteção: a verificação do Turnstile e a moderação são obrigatórias. Para um serviço público com mais tráfego, acrescente rate limiting no servidor e mecanismos antiabuso adicionais.
+O modo `--no-verify-jwt` permite o uso sem login. Ele não substitui a proteção: a verificação do Turnstile é obrigatória. Como a publicação é automática, implemente também rate limiting no servidor, detecção de abuso e um processo para remover comentários inadequados.
 
 ## 4. Configuração do GitHub Pages
 
@@ -55,20 +55,20 @@ Adicione também a **repository variable** `VITE_TURNSTILE_SITE_KEY` (a chave p�
 
 O workflow `.github/workflows/deploy.yml` passa a publicar após cada **push/merge na main**, mantendo a opção de execução manual. Ele **não executa migrations** nem instala Edge Functions automaticamente, pois essas operações exigem credenciais administrativas, configuração específica do projeto e verificações adicionais.
 
-## 5. Aprovar uma avaliação
+## 5. Publicação automática e remoção de abusos
 
-Em **Supabase Dashboard → Table Editor → reviews**, encontre um comentário com `status = pending`, revise-o e altere para `approved`. Se inadequado, use `rejected`. Só registros aprovados aparecem na timeline e na página do restaurante.
+O envio bem-sucedido grava um registro com `status = approved`. Não é necessária aprovação manual. Para ocultar um conteúdo inadequado, um administrador pode alterar seu status para `rejected` no **Supabase Dashboard → Table Editor → reviews**. O registro deixa de ser exibido publicamente.
 
-O apelido fornecido pelo visitante **não representa identidade verificada**; não apresente os comentários como provas de visita. Moderação não equivale à verificação de identidade ou experiência.
+O apelido fornecido pelo visitante **não representa identidade verificada**; não apresente os comentários como provas de visita. É importante disponibilizar futuramente um canal de denúncia e políticas contra spam e abuso.
 
 ## 6. Testes antes de publicar
 
 1. Execute `npm run lint` e `npm run build`.
 2. Faça uma busca por cidade/estado e confirme que o formulário lista os mesmos restaurantes.
 3. Conclua o Turnstile e envie uma avaliação com nota, apelido e texto de pelo menos 10 caracteres.
-4. Confira que o registro foi criado como `pending` e **não apareceu publicamente**.
-5. Aprove o registro no Supabase e recarregue a timeline e os detalhes do restaurante.
-6. Tente acessar um registro pendente usando a chave pública: ele não deve ser retornado.
+4. Confira que o registro foi criado como `approved` e apareceu na timeline após recarregá-la.
+5. Confira a avaliação também nos detalhes do restaurante.
+6. Altere o status do teste para `rejected` e confirme que deixou de aparecer publicamente.
 7. Execute o merge na `main` e confira o workflow no GitHub Actions.
 
 **Sem tabela, Edge Function implantada e Turnstile configurado, o envio de avaliações não estará funcional**, mesmo depois do deploy do frontend.
@@ -78,4 +78,4 @@ O apelido fornecido pelo visitante **não representa identidade verificada**; n�
 - O envio e a consulta já estão preparados no código, mas a configuração real do Supabase/Turnstile deve ser realizada por quem administra esses serviços.
 - A busca e o cache de restaurantes existentes não foram migrados; são responsabilidade da Edge Function `get-restaurants`.
 - Favoritos são locais e não sincronizam entre dispositivos.
-- Ainda não há painel próprio de moderação, votos ou respostas a comentários.
+- Ainda não há painel próprio para remoção de abusos, denúncias, votos ou respostas a comentários.
