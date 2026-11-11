@@ -14,6 +14,7 @@ export default function useRestaurants(city, state, enabled = true) {
       try {
         setLoading(true)
         setError(null)
+        setRestaurants([])
 
         const data = await getRestaurants(city, state)
 

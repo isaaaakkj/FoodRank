@@ -80,6 +80,7 @@ export default function FeaturedRestaurants({ filters }) {
   )
 
   const hasMore = visibleCount < filteredRestaurants.length
+  const hasLocation = filters.hasSearchedLocation && Boolean(filters.location.city && filters.location.state)
 
   return (
     <section className="mx-auto max-w-[1440px] py-12">
@@ -90,21 +91,25 @@ export default function FeaturedRestaurants({ filters }) {
           </p>
 
           <h2 className="mt-1 font-display text-3xl font-semibold text-[#28351f]">
-            {filters.search
-              ? 'Resultados da busca'
-              : `Restaurantes em ${filters.location.city}`}
+            {!hasLocation
+              ? 'Encontre restaurantes'
+              : filters.search
+                ? 'Resultados da busca'
+                : `Restaurantes em ${filters.location.city}`}
           </h2>
 
           <p className="mt-2 text-sm text-[#6d6a61]">
-            {filters.search
-              ? `Encontramos ${filteredRestaurants.length} restaurante${
-                  filteredRestaurants.length === 1 ? '' : 's'
-                } para sua busca.`
-              : `Explore restaurantes encontrados em ${filters.location.city}, ${filters.location.state}.`}
+            {!hasLocation
+              ? 'Selecione um estado e uma cidade para começar a explorar.'
+              : filters.search
+                ? `Encontramos ${filteredRestaurants.length} restaurante${
+                    filteredRestaurants.length === 1 ? '' : 's'
+                  } para sua busca.`
+                : `Explore restaurantes encontrados em ${filters.location.city}, ${filters.location.state}.`}
           </p>
         </div>
 
-        {!loading && !error && restaurants.length > 0 && (
+        {hasLocation && !loading && !error && restaurants.length > 0 && (
           <span className="hidden rounded-full bg-[#eee7d9] px-4 py-2 text-xs font-semibold text-[#604936] sm:block">
             {filteredRestaurants.length} resultado
             {filteredRestaurants.length === 1 ? '' : 's'}
@@ -112,7 +117,14 @@ export default function FeaturedRestaurants({ filters }) {
         )}
       </div>
 
-      {loading && (
+      {!hasLocation && (
+        <div className="rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-10 text-center">
+          <p className="font-display text-xl text-[#28351f]">Escolha uma localização para começar</p>
+          <p className="mt-2 text-sm text-[#6d6a61]">Use a busca de localização acima para encontrar restaurantes.</p>
+        </div>
+      )}
+
+      {hasLocation && loading && (
         <div className="rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-10 text-center">
           <p className="text-sm text-[#6d6a61]">
             {restaurants.length > 0
@@ -122,7 +134,7 @@ export default function FeaturedRestaurants({ filters }) {
         </div>
       )}
 
-      {error && (
+      {hasLocation && error && (
         <div className="rounded-2xl border border-[#c9aaaa] bg-[#f3e5e1] p-10 text-center">
           <p className="font-semibold text-[#6b3434]">
             Não foi possível carregar os restaurantes.
@@ -138,7 +150,7 @@ export default function FeaturedRestaurants({ filters }) {
         </div>
       )}
 
-      {!loading && !error && filteredRestaurants.length === 0 && (
+      {hasLocation && !loading && !error && filteredRestaurants.length === 0 && (
         <div className="rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-10 text-center">
           <p className="font-display text-xl text-[#28351f]">
             Nenhum restaurante encontrado
@@ -150,7 +162,7 @@ export default function FeaturedRestaurants({ filters }) {
         </div>
       )}
 
-      {!error && visibleRestaurants.length > 0 && (
+      {hasLocation && !loading && !error && visibleRestaurants.length > 0 && (
         <>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {visibleRestaurants.map((restaurant) => (
