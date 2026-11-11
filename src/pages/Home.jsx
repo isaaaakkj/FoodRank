@@ -38,15 +38,15 @@ export default function Home() {
         onSearchChange={setSearch}
       />
 
-      <main className="px-4 pb-16 lg:px-6">
-        <Hero onLocationSearch={handleLocationSearch} />
+      <main id="main-content" tabIndex={-1} className="px-4 pb-16 lg:px-6">
+        <Hero onLocationSearch={handleLocationSearch} onLocationChange={() => setHasSearchedLocation(false)} />
 
         <CategoryList
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
         />
 
-        <FeaturedRestaurants filters={filters} />
+        <FeaturedRestaurants key={JSON.stringify(filters)} filters={filters} />
 
         <TimelineSection />
 

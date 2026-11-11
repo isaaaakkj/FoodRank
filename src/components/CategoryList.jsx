@@ -24,7 +24,7 @@ const categories = [
             </h2>
           </div>
   
-          <button className="hidden text-sm font-semibold text-[#604936] transition hover:text-[#28351f] sm:block">
+          <button onClick={() => onCategoryChange('Todos')} className="hidden text-sm font-semibold text-[#604936] transition hover:text-[#28351f] sm:block">
             Ver todas
           </button>
         </div>
@@ -35,6 +35,7 @@ const categories = [
   
             return (
               <button
+                aria-pressed={isSelected}
                 key={category.name}
                 onClick={() => onCategoryChange(category.name)}
                 className={`flex min-w-fit items-center gap-2 rounded-full border px-5 py-3 text-sm font-medium transition ${

@@ -1,39 +1,32 @@
 # FoodRank
 
-O **FoodRank** é um projeto escolar de recomendação e descoberta de restaurantes. É possível pesquisar por cidade e estado, filtrar por categoria e explorar os estabelecimentos encontrados.
+MVP escolar de descoberta de restaurantes com React, Vite, Tailwind CSS e Supabase, publicado no GitHub Pages.
 
-## Tecnologias
+## Desenvolvimento local
 
-- React + Vite
-- Tailwind CSS
-- Supabase (Edge Function para consulta de restaurantes)
-- React Router
-- Leaflet e React Leaflet (mapas)
-- Lucide React (ícones)
+1. Use Node.js 22.12+ e npm.
+2. Copie `.env.example` para `.env` e configure somente a URL e a chave PUBLICA do Supabase. Nunca use chave privada em variaveis `VITE_`.
+3. Execute `npm ci` e `npm run dev`.
+4. Abra o endereco informado pelo Vite com o caminho `/FoodRank/`.
 
-## Executar localmente
+## Validacao
 
-**Requisitos:** Node.js e npm.
+```sh
+npm ci
+npm run lint
+npm run build
+node scripts/verify-dist.mjs
+npm run preview
+```
 
-1. Instale as dependências: `npm install`.
-2. Configure as variáveis de ambiente exigidas por `src/services/supabase.js` em um arquivo `.env` local.
-3. Inicie o projeto: `npm run dev`.
+No PowerShell com scripts bloqueados, use `npm.cmd` no lugar de `npm`.
 
-O arquivo `.env` não deve ser enviado para o GitHub. Utilize apenas chaves públicas do Supabase no frontend; nunca exponha uma chave `service_role`.
+O teste opcional `node scripts/smoke-browser.mjs` usa Chrome local no Windows (ou `BROWSER_PATH`), portas 4173/9223, dados controlados e gera capturas ignoradas em `artifacts/`. Requer Node com WebSocket nativo.
 
-## Comandos
+## Publicacao
 
-| Comando | Função |
-| --- | --- |
-| `npm run dev` | Inicia o servidor de desenvolvimento |
-| `npm run build` | Gera a versão de produção |
-| `npm run preview` | Pré-visualiza a versão de produção |
-| `npm run lint` | Executa o ESLint |
+Base: `/FoodRank/`. As rotas usam hash. O workflow publica somente via acionamento manual autorizado. No GitHub Pages, a origem deve ser **GitHub Actions**, com as variaveis publicas configuradas nos secrets do workflow. O artefato publicado e `dist`, nunca o HTML fonte.
 
-## Busca de restaurantes
+Favoritos ficam neste navegador. Avaliacoes e timeline permanecem demonstrativas; nenhuma avaliacao e enviada ao Supabase.
 
-A interface consulta a Edge Function `get-restaurants` do Supabase por meio de `src/services/restaurants.js`. É necessário configurar e publicar essa função no seu projeto Supabase para a busca funcionar. Há cache local para reduzir consultas repetidas.
-
-## Publicação
-
-O Vite está configurado com a base `/FoodRank/`, adequada para publicação no GitHub Pages no endereço de projeto correspondente. A publicação exige configurar o processo de deploy separadamente.
+Consulte [MAINTENANCE.md](MAINTENANCE.md) para diagnostico, testes, arquivos alterados, alerta sobre credencial historica e proposta de backend que depende de aprovacao.

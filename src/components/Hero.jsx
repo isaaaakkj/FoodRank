@@ -31,11 +31,12 @@ const states = [
   { uf: 'TO', name: 'Tocantins' },
 ]
 
-export default function Hero({ onLocationSearch }) {
+export default function Hero({ onLocationSearch, onLocationChange }) {
   const [selectedState, setSelectedState] = useState('')
   const [city, setCity] = useState('')
 
-  function handleSearch() {
+  function handleSearch(event) {
+    event.preventDefault()
     if (!selectedState || !city.trim()) {
       return
     }
@@ -66,7 +67,7 @@ export default function Hero({ onLocationSearch }) {
           incríveis em todo o Brasil.
         </p>
 
-        <div className="mt-8 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
+        <form onSubmit={handleSearch} className="mt-8 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
 
           {/* ESTADO */}
           <div className="flex h-14 items-center gap-3 rounded-xl bg-[#faf8f3] px-5">
@@ -78,15 +79,14 @@ export default function Hero({ onLocationSearch }) {
 
             <div className="min-w-0 flex-1">
 
-              <span className="block text-xs text-[#777269]">
-                Estado
-              </span>
+              <label htmlFor="state" className="block text-xs text-[#777269]">Estado</label>
 
-              <select
+              <select id="state" required
                 value={selectedState}
                 onChange={(event) => {
                   setSelectedState(event.target.value)
                   setCity('')
+                  onLocationChange()
                 }}
                 className="w-full cursor-pointer appearance-none bg-transparent text-sm font-medium text-[#20231d] outline-none"
               >
@@ -123,14 +123,12 @@ export default function Hero({ onLocationSearch }) {
 
             <div className="min-w-0 flex-1">
 
-              <span className="block text-xs text-[#777269]">
-                Cidade
-              </span>
+              <label htmlFor="city" className="block text-xs text-[#777269]">Cidade</label>
 
               <input
-                type="text"
+                id="city" required maxLength={100} type="text"
                 value={city}
-                onChange={(event) => setCity(event.target.value)}
+                onChange={(event) => { setCity(event.target.value); onLocationChange() }}
                 placeholder={
                   selectedState
                     ? 'Digite a cidade'
@@ -146,7 +144,7 @@ export default function Hero({ onLocationSearch }) {
 
           {/* BUSCAR */}
           <button
-            onClick={handleSearch}
+            type="submit"
             disabled={!selectedState || !city.trim()}
             className="flex h-14 items-center justify-center gap-2 rounded-xl bg-[#d4b66f] px-7 font-semibold text-[#28351f] transition hover:bg-[#e1c889] disabled:cursor-not-allowed disabled:opacity-50"
           >
@@ -157,7 +155,7 @@ export default function Hero({ onLocationSearch }) {
 
           </button>
 
-        </div>
+        </form>
 
       </div>
 

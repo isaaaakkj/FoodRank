@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Send, Star } from 'lucide-react'
 
 export default function ReviewForm() {
+  const [notice, setNotice] = useState('')
   const [name, setName] = useState('')
   const [restaurant, setRestaurant] = useState('')
   const [rating, setRating] = useState(0)
@@ -10,17 +11,7 @@ export default function ReviewForm() {
   function handleSubmit(event) {
     event.preventDefault()
 
-    if (!name || !restaurant || !rating || !comment) {
-      alert('Preencha todos os campos.')
-      return
-    }
-
-    alert('Avaliação enviada com sucesso!')
-
-    setName('')
-    setRestaurant('')
-    setRating(0)
-    setComment('')
+    setNotice('Nenhuma avaliação foi salva. A publicação depende da implementação e aprovação do backend.')
   }
 
   return (
@@ -38,20 +29,21 @@ export default function ReviewForm() {
           </h2>
 
           <p className="mt-2 text-sm text-[#6d6a61]">
-            Compartilhe sua experiência e ajude outras pessoas a escolherem onde comer.
+            Formulário demonstrativo: avaliações ainda não são salvas nem publicadas. Não informe dados pessoais.
           </p>
         </div>
 
+        {notice && <p role="status" className="mb-4 text-[#6b3434]">{notice}</p>}
         <form onSubmit={handleSubmit} className="space-y-5">
 
           {/* Nome */}
           <div>
-            <label className="mb-2 block text-sm font-semibold text-[#20231d]">
+            <label htmlFor="review-name" className="mb-2 block text-sm font-semibold text-[#20231d]">
               Seu nome ou apelido
             </label>
 
             <input
-              type="text"
+              id="review-name" maxLength={80} type="text"
               value={name}
               onChange={(event) => setName(event.target.value)}
               placeholder="Ex.: Maria"
@@ -61,11 +53,11 @@ export default function ReviewForm() {
 
           {/* Restaurante */}
           <div>
-            <label className="mb-2 block text-sm font-semibold text-[#20231d]">
+            <label htmlFor="review-restaurant" className="mb-2 block text-sm font-semibold text-[#20231d]">
               Restaurante
             </label>
 
-            <select
+            <select id="review-restaurant"
               value={restaurant}
               onChange={(event) => setRestaurant(event.target.value)}
               className="h-12 w-full rounded-xl border border-[#d8cbb7] bg-[#faf8f3] px-4 text-sm text-[#20231d] outline-none transition focus:border-[#28351f]"
@@ -88,15 +80,16 @@ export default function ReviewForm() {
 
           {/* Nota */}
           <div>
-            <label className="mb-2 block text-sm font-semibold text-[#20231d]">
+            <p id="rating-label" className="mb-2 block text-sm font-semibold text-[#20231d]">
               Sua nota
-            </label>
+            </p>
 
-            <div className="flex gap-2">
+            <div role="group" aria-labelledby="rating-label" className="flex gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
                   type="button"
+                  aria-pressed={star === rating}
                   aria-label={`Dar ${star} estrelas`}
                   onClick={() => setRating(star)}
                   className="transition hover:scale-110"
@@ -121,7 +114,7 @@ export default function ReviewForm() {
               Comentário
             </label>
 
-            <textarea
+            <textarea id="review-comment" maxLength={2000}
               value={comment}
               onChange={(event) => setComment(event.target.value)}
               placeholder="Conte como foi sua experiência..."
@@ -136,7 +129,7 @@ export default function ReviewForm() {
             className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#28351f] px-6 text-sm font-semibold text-[#f7f3eb] transition hover:bg-[#4b5b3d] sm:w-auto"
           >
             <Send size={17} />
-            Publicar avaliação
+            Verificar disponibilidade
           </button>
 
         </form>

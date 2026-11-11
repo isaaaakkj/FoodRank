@@ -1,6 +1,8 @@
+import { safeImageUrl, fallbackImage } from '../services/images'
+import FavoriteButton from '../components/FavoriteButton'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, Heart, MapPin, Star } from 'lucide-react'
+import { ArrowLeft, MapPin, Star } from 'lucide-react'
 
 import RestaurantMap from '../components/RestaurantMap'
 import { getRestaurants } from '../services/restaurants'
@@ -40,9 +42,7 @@ export default function Restaurant() {
 
         setRestaurant(foundRestaurant || null)
 
-      } catch (err) {
-        console.error('Erro ao carregar restaurante:', err)
-
+      } catch {
         if (!cancelled) {
           setError(true)
         }
@@ -138,17 +138,12 @@ export default function Restaurant() {
         <div className="relative h-[320px] overflow-hidden rounded-2xl md:h-[440px]">
 
           <img
-            src={restaurant.image}
+            src={safeImageUrl(restaurant.image)} loading="lazy" referrerPolicy="no-referrer" onError={event => { event.currentTarget.onerror = null; event.currentTarget.src = fallbackImage }}
             alt={restaurant.name}
             className="h-full w-full object-cover"
           />
 
-          <button
-            aria-label={`Favoritar ${restaurant.name}`}
-            className="absolute right-5 top-5 flex h-11 w-11 items-center justify-center rounded-full bg-[#faf8f3]/90 text-[#604936] shadow-md backdrop-blur transition hover:bg-white"
-          >
-            <Heart size={20} />
-          </button>
+        <FavoriteButton restaurant={restaurant} />
 
         </div>
 

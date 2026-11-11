@@ -21,7 +21,7 @@ Use os valores do seu arquivo `.env` local. **Não envie o arquivo `.env` ao Git
 
 ## 3. Publicar
 
-O workflow é iniciado automaticamente quando há um push ou merge na `main`. Também pode ser executado manualmente em **Actions → Deploy FoodRank → Run workflow → main**.
+O workflow é executado manualmente, após autorização, em **Actions → Deploy FoodRank → Run workflow → main**. Integre as mudanças por pull request antes de publicar. Push ou merge não iniciam publicação automaticamente.
 
 Acompanhe os jobs `build` e `deploy`. Após a conclusão, abra:
 
@@ -33,7 +33,7 @@ https://isaaaakkj.github.io/FoodRank/
 - **Falha em `npm ci` ou `npm run build`:** abra o log do job `build` no Actions.
 - **Falha na etapa de Pages:** confirme que **Settings → Pages → Source** está em **GitHub Actions**.
 - **Página em branco:** abra o console do navegador e confira as requisições e a configuração do Supabase.
-- **Erro ao atualizar uma rota interna:** o workflow publica uma cópia de `index.html` como `404.html` para permitir carregar o aplicativo React em URLs internas. O endereço pode continuar exibindo o status HTTP 404 mesmo que o app carregue.
+- **Erro ao atualizar uma rota interna:** as rotas usam hash, por exemplo `/FoodRank/#/favorites`, para que o servidor receba apenas `/FoodRank/`. Atualize links antigos sem hash; não é necessário um fallback `404.html`.
 
 ## 5. Conferir o aplicativo
 
