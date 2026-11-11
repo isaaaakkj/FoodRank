@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react'
 
-const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY
+import { turnstileSiteKey } from '../services/turnstileConfig'
+
+const siteKey = turnstileSiteKey
 let loader
 
 function loadTurnstile() {
@@ -17,8 +19,6 @@ function loadTurnstile() {
   }
   return loader
 }
-
-export const isTurnstileConfigured = Boolean(siteKey)
 
 export default function Turnstile({ onToken }) {
   const container = useRef(null)
