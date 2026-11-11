@@ -45,8 +45,6 @@ export default function RestaurantCard({ restaurant }) {
             </div>
           </div>
 
-
-
         </div>
 
         <div className="mt-4 flex items-center justify-end border-t border-[#ded5c6] pt-4">
