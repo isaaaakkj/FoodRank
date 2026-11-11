@@ -2,7 +2,7 @@ import { safeImageUrl, fallbackImage } from '../services/images'
 import FavoriteButton from '../components/FavoriteButton'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, MapPin, Star } from 'lucide-react'
+import { ArrowLeft, MapPin } from 'lucide-react'
 
 import RestaurantMap from '../components/RestaurantMap'
 import { getRestaurants } from '../services/restaurants'
@@ -168,30 +168,6 @@ export default function Restaurant() {
                   {restaurant.location}
                 </span>
 
-                <span className="text-[#c5b9a7]">•</span>
-
-                <span>{restaurant.price}</span>
-
-              </div>
-
-            </div>
-
-            <div className="flex h-fit items-center gap-2 rounded-xl border border-[#ddd3c2] bg-[#faf8f3] px-5 py-3">
-
-              <Star
-                size={21}
-                fill="currentColor"
-                className="text-[#a88b54]"
-              />
-
-              <div>
-                <strong className="text-lg text-[#604936]">
-                  {restaurant.rating ?? '—'}
-                </strong>
-
-                <p className="text-xs text-[#6d6a61]">
-                  Avaliações
-                </p>
               </div>
 
             </div>
@@ -209,8 +185,8 @@ export default function Restaurant() {
             </h2>
 
             <p className="mt-4 leading-7 text-[#6d6a61]">
-              Conheça este restaurante em {restaurant.city} e descubra
-              uma nova experiência gastronômica.
+              As informações disponíveis sobre este estabelecimento são obtidas pela busca de restaurantes.
+              Antes de visitar, confirme endereço, horários e serviços diretamente com o local.
             </p>
 
           </section>

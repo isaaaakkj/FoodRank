@@ -1,6 +1,6 @@
 import { safeImageUrl, fallbackImage } from '../services/images'
 import FavoriteButton from './FavoriteButton'
-import { MapPin, Star } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 export default function RestaurantCard({ restaurant }) {
@@ -45,25 +45,9 @@ export default function RestaurantCard({ restaurant }) {
             </div>
           </div>
 
-          <div className="flex items-center gap-1 rounded-lg bg-[#eee7d9] px-2.5 py-1.5">
-            <Star
-              size={15}
-              fill="currentColor"
-              className="text-[#a88b54]"
-            />
-
-            <span className="text-sm font-bold text-[#604936]">
-              {restaurant.rating ?? '—'}
-            </span>
-          </div>
-
         </div>
 
-        <div className="mt-4 flex items-center justify-between border-t border-[#ded5c6] pt-4">
-
-          <span className="text-sm text-[#6d6a61]">
-            {restaurant.price}
-          </span>
+        <div className="mt-4 flex items-center justify-end border-t border-[#ded5c6] pt-4">
 
           <button
             onClick={openRestaurant}

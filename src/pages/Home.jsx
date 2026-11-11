@@ -50,7 +50,12 @@ export default function Home() {
 
         <TimelineSection />
 
-        <ReviewForm />
+        <ReviewForm
+          key={`${hasSearchedLocation}-${location.city}-${location.state}`}
+          location={location}
+          enabled={hasSearchedLocation}
+        />
+
       </main>
     </div>
   )
