@@ -1,74 +1,25 @@
-import { Heart, Star } from 'lucide-react'
+import { Star } from 'lucide-react'
 
 export default function ReviewCard({ review }) {
+  const name = review.author_name || 'Visitante'
+  const date = review.created_at ? new Date(review.created_at).toLocaleDateString('pt-BR') : ''
   return (
-    <article className="border-b border-[#ddd3c2] py-7">
-
-      <div className="flex gap-4">
-
-        {/* Avatar */}
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#28351f] font-semibold text-[#f7f3eb]">
-          {review.name.charAt(0).toUpperCase()}
+    <article className="border-b border-[#ddd3c2] py-6">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <div aria-hidden="true" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#28351f] font-semibold text-[#f7f3eb]">{name.charAt(0).toUpperCase()}</div>
+          <div>
+            <h3 className="font-semibold text-[#20231d]">{name}</h3>
+            <p className="text-xs text-[#6d6a61]">{date}</p>
+          </div>
         </div>
-
-        <div className="min-w-0 flex-1">
-
-          {/* Nome + data */}
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <h3 className="font-semibold text-[#20231d]">
-                {review.name}
-              </h3>
-
-              <p className="text-xs text-[#6d6a61]">
-                {review.date}
-              </p>
-            </div>
-
-            {/* Nota */}
-            <div className="flex items-center gap-1">
-              <Star
-                size={16}
-                fill="currentColor"
-                className="text-[#a88b54]"
-              />
-
-              <span className="text-sm font-bold text-[#604936]">
-                {review.rating}
-              </span>
-            </div>
-          </div>
-
-          {/* Restaurante */}
-          <p className="mt-3 text-sm text-[#6d6a61]">
-            avaliou{' '}
-            <span className="font-semibold text-[#604936]">
-              {review.restaurant}
-            </span>
-          </p>
-
-          {/* Comentário */}
-          <p className="mt-3 leading-7 text-[#20231d]">
-            {review.comment}
-          </p>
-
-          {/* Ações */}
-          <div className="mt-4 flex items-center gap-5">
-
-            <button disabled title="Indisponível: avaliação demonstrativa" className="flex items-center gap-2 text-sm text-[#6d6a61] transition hover:text-[#6b3434]">
-              <Heart size={17} strokeWidth={1.8} />
-              {review.likes}
-            </button>
-
-            <button disabled title="Indisponível: avaliação demonstrativa" className="text-sm font-medium text-[#604936] transition hover:text-[#28351f]">
-              Responder
-            </button>
-
-          </div>
-
+        <div className="flex items-center gap-1 text-[#604936]" aria-label={`${review.rating} de 5 estrelas`}>
+          <Star size={16} fill="currentColor" className="text-[#a88b54]" />
+          <span className="text-sm font-bold">{review.rating}/5</span>
         </div>
       </div>
-
+      <p className="mt-3 text-sm text-[#6d6a61]">Avaliou <strong>{review.restaurant_name}</strong> — {review.city}, {review.state}</p>
+      <p className="mt-3 whitespace-pre-wrap break-words leading-7 text-[#20231d]">{review.comment}</p>
     </article>
   )
 }
