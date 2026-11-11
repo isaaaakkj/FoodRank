@@ -1,6 +1,6 @@
 # FoodRank — manutenção de 11/11/2026
 
-Alterações locais na branch `fix/foodrank-maintenance`. Nenhum commit, push, deploy, alteração de API ou migração de banco foi executado. Identidade visual, busca por estado/cidade, categorias, cartões, detalhes, mapas e chamada à Edge Function `get-restaurants` foram preservados. Nenhuma dependência adicionada.
+Este relatório registra a validação inicial na branch `fix/foodrank-maintenance`. Após essa etapa, o proprietário solicitou a publicação no GitHub Pages: as alterações estão sendo integradas por pull request, com acionamento manual do deploy. Não houve alteração de API ou migração de banco. Identidade visual, busca por estado/cidade, categorias, cartões, detalhes, mapas e chamada à Edge Function `get-restaurants` foram preservados. Nenhuma dependência adicionada.
 
 ## Tela branca e GitHub Pages
 
@@ -10,7 +10,7 @@ O `vite.config.js` já tinha `base: '/FoodRank/'`, mas o `dist/index.html` encon
 
 O workflow já enviava `dist`. Agora exige lint e validação do artefato e só permite publicação por `workflow_dispatch`, evitando deploy automático ao integrar código. As rotas usam hash: `/FoodRank/#/restaurant/ID?city=...&state=...`. Recarregar uma página de detalhes solicita ao servidor apenas `/FoodRank/`, sem depender de fallback de SPA do Pages. Links antigos sem hash precisam ser atualizados. A cópia de `index.html` para `404.html` foi removida porque não é necessária para essas rotas.
 
-O proprietário deve conferir **Settings → Pages → Build and deployment → Source: GitHub Actions**, os secrets públicos `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`, permissões do environment `github-pages` e o resultado do workflow. A configuração administrativa não foi consultada nem modificada. O site público não pôde ser lido pela ferramenta de navegação; portanto a causa administrativa permanece hipótese, não confirmação. Publicação continua dependendo de autorização.
+Na etapa inicial, a configuração administrativa não havia sido consultada. Durante a publicação autorizada, a API confirmou Pages no modo workflow, os dois secrets públicos existentes e o environment `github-pages` permitindo somente `main`. Nenhuma dessas configurações administrativas foi modificada. A publicação deve ocorrer por workflow após integração via pull request; não há push direto na `main`.
 
 Referências: [publicação Vite no Pages](https://vite.dev/guide/static-deploy.html#github-pages), [configuração da origem no GitHub](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
 
