@@ -19,7 +19,7 @@ function readCache(key) {
       return null
     }
 
-    return cache.data
+    return Array.isArray(cache.data) && Number.isFinite(cache.timestamp) && cache.duration === CACHE_DURATION ? cache.data : null
   } catch {
     return null
   }
@@ -98,6 +98,8 @@ export async function getRestaurants(city, state) {
 }
 
 async function searchRestaurants(city, state) {
+  if (!supabase) throw new Error('Busca indisponível: configure as variáveis públicas do Supabase e gere um novo build.')
+
   const { data, error } = await supabase.functions.invoke(
     'get-restaurants',
     {
@@ -109,15 +111,11 @@ async function searchRestaurants(city, state) {
   )
 
   if (error) {
-    console.error('Erro ao consultar a Edge Function:', error)
-
-    throw new Error(
-      error.message || 'Não foi possível buscar os restaurantes.'
-    )
+    throw new Error('Não foi possível buscar os restaurantes. Tente novamente em instantes.')
   }
 
   if (data?.error) {
-    throw new Error(data.error)
+    throw new Error('O serviço de restaurantes está temporariamente indisponível.')
   }
 
   if (!Array.isArray(data?.restaurants)) {
@@ -126,5 +124,5 @@ async function searchRestaurants(city, state) {
     )
   }
 
-  return data.restaurants
+  return data.restaurants.filter((item) => item && item.id != null && typeof item.name === 'string').map((item) => ({ ...item, city, state }))
 }

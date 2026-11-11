@@ -42,3 +42,13 @@ button {
 .font-display {
   font-family: 'Playfair Display', serif;
 }
+:focus-visible { outline: 3px solid var(--brown); outline-offset: 4px; }
+button:disabled { cursor: not-allowed; opacity: .65; }
+.skip-link { position: absolute; left: 1rem; top: -100px; z-index: 2000; background: var(--cream); padding: 1rem; }
+.skip-link:focus { top: 1rem; }
+input, select, textarea { min-width: 0; }
+p, h1, h2, h3 { overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

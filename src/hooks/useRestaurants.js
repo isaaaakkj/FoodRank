@@ -1,56 +1,27 @@
-
 import { useEffect, useState } from 'react'
 import { getRestaurants } from '../services/restaurants'
 
 export default function useRestaurants(city, state, enabled = true) {
-  const [restaurants, setRestaurants] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [result, setResult] = useState(null)
+  const [attempt, setAttempt] = useState(0)
+  const key = JSON.stringify([city, state, enabled, attempt])
+  const active = Boolean(enabled && city && state)
 
   useEffect(() => {
+    if (!active) return
     let cancelled = false
+    getRestaurants(city, state).then(
+      restaurants => { if (!cancelled) setResult({ key, restaurants }) },
+      () => { if (!cancelled) setResult({ key, restaurants: [], error: 'Verifique sua conexão e tente novamente. Se o problema persistir, a busca pode estar indisponível.' }) },
+    )
+    return () => { cancelled = true }
+  }, [city, state, active, key])
 
-    async function loadRestaurants() {
-      try {
-        setLoading(true)
-        setError(null)
-
-        const data = await getRestaurants(city, state)
-
-        if (!cancelled) {
-          setRestaurants(data)
-        }
-      } catch (err) {
-        console.error('Erro ao buscar restaurantes:', err)
-
-        if (!cancelled) {
-          setError(
-            err.message || 'Não foi possível buscar restaurantes.'
-          )
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false)
-        }
-      }
-    }
-
-    if (enabled && city && state) {
-      loadRestaurants()
-    } else {
-      setLoading(false)
-      setError(null)
-      setRestaurants([])
-    }
-
-    return () => {
-      cancelled = true
-    }
-  }, [city, state, enabled])
-
+  const current = active && result?.key === key ? result : null
   return {
-    restaurants,
-    loading,
-    error,
+    restaurants: current?.restaurants ?? [],
+    loading: active && !current,
+    error: current?.error ?? null,
+    retry: () => setAttempt(value => value + 1),
   }
 }

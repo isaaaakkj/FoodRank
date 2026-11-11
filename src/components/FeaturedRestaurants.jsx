@@ -1,26 +1,17 @@
 
 
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState } from 'react'
 import RestaurantCard from './RestaurantCard'
 import useRestaurants from '../hooks/useRestaurants'
 
 export default function FeaturedRestaurants({ filters }) {
-  const { restaurants, loading, error } = useRestaurants(
+  const { restaurants, loading, error, retry } = useRestaurants(
     filters.location.city,
     filters.location.state,
     filters.hasSearchedLocation
   )
 
   const [visibleCount, setVisibleCount] = useState(8)
-
-  useEffect(() => {
-    setVisibleCount(8)
-  }, [
-    filters.location.city,
-    filters.location.state,
-    filters.search,
-    filters.category,
-  ])
 
   const filteredRestaurants = useMemo(() => {
     const searchText = filters.search.trim().toLowerCase()
@@ -82,7 +73,7 @@ export default function FeaturedRestaurants({ filters }) {
   const hasMore = visibleCount < filteredRestaurants.length
 
   return (
-    <section className="mx-auto max-w-[1440px] py-12">
+    <section id="results" aria-busy={loading} className="mx-auto max-w-[1440px] py-12">
       <div className="mb-7 flex items-end justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a88b54]">
@@ -90,13 +81,13 @@ export default function FeaturedRestaurants({ filters }) {
           </p>
 
           <h2 className="mt-1 font-display text-3xl font-semibold text-[#28351f]">
-            {filters.search
+            {!filters.hasSearchedLocation ? 'Explore restaurantes' : filters.search
               ? 'Resultados da busca'
               : `Restaurantes em ${filters.location.city}`}
           </h2>
 
           <p className="mt-2 text-sm text-[#6d6a61]">
-            {filters.search
+            {!filters.hasSearchedLocation ? 'Selecione um estado e digite a cidade para começar.' : filters.search
               ? `Encontramos ${filteredRestaurants.length} restaurante${
                   filteredRestaurants.length === 1 ? '' : 's'
                 } para sua busca.`
@@ -113,7 +104,7 @@ export default function FeaturedRestaurants({ filters }) {
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-10 text-center">
+        <div role="status" className="rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-10 text-center">
           <p className="text-sm text-[#6d6a61]">
             {restaurants.length > 0
               ? 'Atualizando restaurantes...'
@@ -123,7 +114,7 @@ export default function FeaturedRestaurants({ filters }) {
       )}
 
       {error && (
-        <div className="rounded-2xl border border-[#c9aaaa] bg-[#f3e5e1] p-10 text-center">
+        <div role="alert" className="rounded-2xl border border-[#c9aaaa] bg-[#f3e5e1] p-10 text-center">
           <p className="font-semibold text-[#6b3434]">
             Não foi possível carregar os restaurantes.
           </p>
@@ -133,13 +124,13 @@ export default function FeaturedRestaurants({ filters }) {
           </p>
 
           <p className="mt-2 text-sm text-[#6d6a61]">
-            Tente novamente em alguns instantes.
+            <button type="button" onClick={retry} className="underline">Tentar novamente</button>
           </p>
         </div>
       )}
 
-      {!loading && !error && filteredRestaurants.length === 0 && (
-        <div className="rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-10 text-center">
+      {filters.hasSearchedLocation && !loading && !error && filteredRestaurants.length === 0 && (
+        <div role="status" className="rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-10 text-center">
           <p className="font-display text-xl text-[#28351f]">
             Nenhum restaurante encontrado
           </p>
@@ -150,7 +141,7 @@ export default function FeaturedRestaurants({ filters }) {
         </div>
       )}
 
-      {!error && visibleRestaurants.length > 0 && (
+      {!loading && !error && visibleRestaurants.length > 0 && (
         <>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {visibleRestaurants.map((restaurant) => (

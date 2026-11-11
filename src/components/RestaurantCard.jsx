@@ -1,4 +1,6 @@
-import { Heart, MapPin, Star } from 'lucide-react'
+import { safeImageUrl, fallbackImage } from '../services/images'
+import FavoriteButton from './FavoriteButton'
+import { MapPin, Star } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 export default function RestaurantCard({ restaurant }) {
@@ -8,7 +10,7 @@ export default function RestaurantCard({ restaurant }) {
     const city = encodeURIComponent(restaurant.city || '')
     const state = encodeURIComponent(restaurant.state || '')
 
-    navigate(`/restaurant/${restaurant.id}?city=${city}&state=${state}`)
+    navigate(`/restaurant/${encodeURIComponent(restaurant.id)}?city=${city}&state=${state}`)
   }
 
   return (
@@ -16,17 +18,12 @@ export default function RestaurantCard({ restaurant }) {
 
       <div className="relative h-56 overflow-hidden">
         <img
-          src={restaurant.image}
+          src={safeImageUrl(restaurant.image)} loading="lazy" referrerPolicy="no-referrer" onError={event => { event.currentTarget.onerror = null; event.currentTarget.src = fallbackImage }}
           alt={restaurant.name}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
         />
 
-        <button
-          aria-label={`Favoritar ${restaurant.name}`}
-          className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#faf8f3]/90 text-[#604936] shadow-sm backdrop-blur transition hover:bg-white"
-        >
-          <Heart size={19} strokeWidth={1.8} />
-        </button>
+        <FavoriteButton restaurant={restaurant} />
 
         <span className="absolute bottom-4 left-4 rounded-full bg-[#28351f]/90 px-3 py-1.5 text-xs font-semibold text-[#f7f3eb] backdrop-blur">
           {restaurant.category}

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import ReviewCard from './ReviewCard'
 
@@ -43,7 +44,7 @@ export default function TimelineSection() {
 
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a88b54]">
-            Comunidade FoodRank
+            Comunidade FoodRank — exemplos fictícios
           </p>
 
           <h2 className="mt-1 font-display text-3xl font-semibold text-[#28351f]">
@@ -51,10 +52,10 @@ export default function TimelineSection() {
           </h2>
         </div>
 
-        <button className="hidden items-center gap-2 text-sm font-semibold text-[#604936] transition hover:text-[#28351f] md:flex">
+        <Link to="/timeline" className="hidden items-center gap-2 text-sm font-semibold text-[#604936] transition hover:text-[#28351f] md:flex">
           Ver timeline
           <ArrowRight size={17} />
-        </button>
+        </Link>
 
       </div>
 
@@ -69,10 +70,10 @@ export default function TimelineSection() {
       </div>
 
       {/* Botão mobile */}
-      <button className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-[#cfc3b0] py-3 text-sm font-semibold text-[#604936] transition hover:border-[#28351f] hover:text-[#28351f] md:hidden">
+      <Link to="/timeline" className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-[#cfc3b0] py-3 text-sm font-semibold text-[#604936] transition hover:border-[#28351f] hover:text-[#28351f] md:hidden">
         Ver timeline
         <ArrowRight size={17} />
-      </button>
+      </Link>
 
     </section>
   )

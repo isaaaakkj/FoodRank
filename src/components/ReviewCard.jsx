@@ -55,12 +55,12 @@ export default function ReviewCard({ review }) {
           {/* Ações */}
           <div className="mt-4 flex items-center gap-5">
 
-            <button className="flex items-center gap-2 text-sm text-[#6d6a61] transition hover:text-[#6b3434]">
+            <button disabled title="Indisponível: avaliação demonstrativa" className="flex items-center gap-2 text-sm text-[#6d6a61] transition hover:text-[#6b3434]">
               <Heart size={17} strokeWidth={1.8} />
               {review.likes}
             </button>
 
-            <button className="text-sm font-medium text-[#604936] transition hover:text-[#28351f]">
+            <button disabled title="Indisponível: avaliação demonstrativa" className="text-sm font-medium text-[#604936] transition hover:text-[#28351f]">
               Responder
             </button>
 
