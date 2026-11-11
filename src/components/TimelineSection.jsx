@@ -37,7 +37,7 @@ export default function TimelineSection({ showLink = true }) {
         ? <div>{reviews.map(review => <ReviewCard key={review.id} review={review} />)}</div>
         : <div role="status" className="rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-8 text-center">
             <p className="font-display text-xl font-semibold text-[#28351f]">Ainda não há avaliações publicadas</p>
-            <p className="mt-3 text-sm text-[#6d6a61]">Avaliações enviadas aparecem aqui após aprovação.</p>
+            <p className="mt-3 text-sm text-[#6d6a61]">As avaliações enviadas aparecem aqui após atualizar a página.</p>
           </div>)}
       {showLink && <Link to="/timeline" className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-[#cfc3b0] py-3 text-sm font-semibold text-[#604936] md:hidden">Ver timeline <ArrowRight size={17} /></Link>}
     </section>
