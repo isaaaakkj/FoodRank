@@ -5,6 +5,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, MapPin } from 'lucide-react'
 
 import RestaurantMap from '../components/RestaurantMap'
+import RestaurantReviews from '../components/RestaurantReviews'
 import { getRestaurants } from '../services/restaurants'
 
 export default function Restaurant() {
@@ -221,6 +222,8 @@ export default function Restaurant() {
           </section>
 
         </div>
+
+        <RestaurantReviews restaurant={restaurant} />
 
       </main>
 
