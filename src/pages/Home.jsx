@@ -6,6 +6,7 @@ import Hero from '../components/Hero'
 import CategoryList from '../components/CategoryList'
 import FeaturedRestaurants from '../components/FeaturedRestaurants'
 import TimelineSection from '../components/TimelineSection'
+import ReviewForm from '../components/ReviewForm'
 
 export default function Home() {
   const [search, setSearch] = useState('')
@@ -48,6 +49,12 @@ export default function Home() {
         <FeaturedRestaurants key={JSON.stringify(filters)} filters={filters} />
 
         <TimelineSection />
+
+        <ReviewForm
+          key={`${hasSearchedLocation}-${location.city}-${location.state}`}
+          location={location}
+          enabled={hasSearchedLocation}
+        />
 
       </main>
     </div>
