@@ -13,6 +13,8 @@ MVP escolar de descoberta de restaurantes com React, Vite, Tailwind CSS e Supaba
 
 ```sh
 npm ci
+npm test
+npm run test:e2e
 npm run lint
 npm run build
 node scripts/verify-dist.mjs
@@ -29,4 +31,8 @@ Base: `/FoodRank/`. As rotas usam hash. O workflow publica somente via acionamen
 
 Favoritos ficam neste navegador. Avaliacoes e timeline permanecem demonstrativas; nenhuma avaliacao e enviada ao Supabase.
 
-Consulte [MAINTENANCE.md](MAINTENANCE.md) para diagnostico, testes, arquivos alterados, alerta sobre credencial historica e proposta de backend que depende de aprovacao.
+Consulte [MAINTENANCE.md](MAINTENANCE.md) para status e pendencias, [dados geograficos](docs/GEOGRAPHIC_DATA.md) para contrato e cobertura e [limpeza do historico](docs/GIT_HISTORY_CLEANUP.md) para o procedimento que depende de aprovacao.
+
+Os testes usam Vitest, React Testing Library e Playwright com servicos externos simulados. Antes da primeira navegacao automatizada, execute `npx playwright install chromium` (no CI Linux, `npx playwright install --with-deps chromium`). O workflow exige testes, lint, build e verificacao do artefato, sem ignorar falhas. A funcao `get-restaurants` v16 foi aplicada e validada em producao com autorizacao em 13/11/2026; a publicacao do frontend no Pages ainda e uma etapa separada.
+
+A preparacao para producao, configuracao do Supabase/GitHub, verificacao real `npm run verify:backend` e reversao estao em [PRODUCTION_RELEASE.md](docs/PRODUCTION_RELEASE.md). O deploy manual exige a variavel publica `FOODRANK_SMOKE_CITIES_JSON` com dois municipios distintos e cobertos; essa verificacao consulta o backend e pode preencher seu cache. Nao execute contra producao sem autorizar essa etapa.
