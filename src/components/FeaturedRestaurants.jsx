@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import RestaurantCard from './RestaurantCard'
 import useRestaurants from '../hooks/useRestaurants'
+import { filterRestaurants } from '../services/filters'
 
 export default function FeaturedRestaurants({ filters }) {
   const { restaurants, loading, error, retry } = useRestaurants(
@@ -11,59 +12,14 @@ export default function FeaturedRestaurants({ filters }) {
     filters.hasSearchedLocation
   )
 
-  const [visibleCount, setVisibleCount] = useState(8)
+  const filterKey = JSON.stringify(filters)
+  const [page, setPage] = useState({ key: filterKey, count: 8 })
+  const visibleCount = page.key === filterKey ? page.count : 8
 
-  const filteredRestaurants = useMemo(() => {
-    const searchText = filters.search.trim().toLowerCase()
-
-    return restaurants.filter((restaurant) => {
-      const name = restaurant.name?.toLowerCase() || ''
-      const category = restaurant.category?.toLowerCase() || ''
-      const location = restaurant.location?.toLowerCase() || ''
-
-      const matchesSearch =
-        searchText === '' ||
-        name.includes(searchText) ||
-        category.includes(searchText) ||
-        location.includes(searchText)
-
-      let matchesCategory = true
-
-      if (filters.category !== 'Todos') {
-        const selected = filters.category
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-
-        const normalizedCategory = category
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-
-        matchesCategory =
-          normalizedCategory.includes(selected) ||
-          (selected === 'pizzaria' &&
-            normalizedCategory.includes('pizza')) ||
-          (selected === 'cafes' &&
-            normalizedCategory.includes('cafe')) ||
-          (selected === 'hamburguer' &&
-            normalizedCategory.includes('burger')) ||
-          (selected === 'brasileira' &&
-            normalizedCategory.includes('brazilian')) ||
-          (selected === 'italiana' &&
-            normalizedCategory.includes('italian')) ||
-          (selected === 'japonesa' &&
-            normalizedCategory.includes('japanese')) ||
-          (selected === 'vegetariana' &&
-            normalizedCategory.includes('vegetarian'))
-      }
-
-      return matchesSearch && matchesCategory
-    })
-  }, [
-    restaurants,
-    filters.search,
-    filters.category,
-  ])
+  const filteredRestaurants = useMemo(
+    () => filterRestaurants(restaurants, filters),
+    [restaurants, filters],
+  )
 
   const visibleRestaurants = filteredRestaurants.slice(
     0,
@@ -87,7 +43,11 @@ export default function FeaturedRestaurants({ filters }) {
           </h2>
 
           <p className="mt-2 text-sm text-[#6d6a61]">
-            {!filters.hasSearchedLocation ? 'Selecione um estado e digite a cidade para começar.' : filters.search
+            {!filters.hasSearchedLocation ? 'Selecione um estado e digite a cidade para começar.' : loading
+              ? 'Consultando restaurantes com município confirmado...'
+              : error
+                ? 'A consulta não foi concluída. Confira a mensagem abaixo.'
+                : filters.search
               ? `Encontramos ${filteredRestaurants.length} restaurante${
                   filteredRestaurants.length === 1 ? '' : 's'
                 } para sua busca.`
@@ -136,7 +96,7 @@ export default function FeaturedRestaurants({ filters }) {
           </p>
 
           <p className="mt-2 text-sm text-[#6d6a61]">
-            Tente outra busca ou escolha outra categoria.
+            Tente outra busca ou categoria. Só exibimos restaurantes com município confirmado; a cobertura geográfica pode ser incompleta.
           </p>
         </div>
       )}
@@ -156,7 +116,7 @@ export default function FeaturedRestaurants({ filters }) {
             <div className="mt-10 flex justify-center">
               <button
                 onClick={() =>
-                  setVisibleCount((current) => current + 8)
+                  setPage({ key: filterKey, count: visibleCount + 8 })
                 }
                 className="rounded-full border border-[#28351f] bg-[#28351f] px-7 py-3 text-sm font-semibold text-[#f7f3eb] transition hover:bg-[#4b5b3d]"
               >

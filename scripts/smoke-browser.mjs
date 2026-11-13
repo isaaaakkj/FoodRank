@@ -3,6 +3,7 @@ import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import assert from 'node:assert/strict'
+import { municipalityKey } from '../supabase/functions/_shared/municipality.js'
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 const profile = mkdtempSync(join(tmpdir(), 'foodrank-browser-'))
 const server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', 'preview', '--host', '127.0.0.1', '--port', '4173', '--strictPort'], { windowsHide: true, stdio: 'ignore' })
@@ -48,7 +49,7 @@ try {
   assert.equal(await evaluate('document.activeElement.id'), 'main-content')
   assert.equal(await evaluate('location.hash'), '')
   assert.equal(await evaluate('document.querySelectorAll("article").length'), 3)
-  await evaluate(`localStorage.setItem('foodrank-restaurants-v2-cidade teste-acre', JSON.stringify({timestamp:Date.now(),duration:21600000,data:[{id:'test-1',name:'<img src=x onerror="window.injected=true">',city:'Cidade Teste',state:'Acre',category:'Italiana',location:'Centro',latitude:0,longitude:0,image:'javascript:alert(1)',rating:4,price:'$$'}]}))`)
+  await evaluate(`localStorage.setItem(${JSON.stringify(municipalityKey('Cidade Teste', 'Acre'))}, JSON.stringify({timestamp:Date.now(),duration:21600000,data:[{id:'test-1',name:'<img src=x onerror="window.injected=true">',city:'Cidade Teste',state:'Acre',municipalityVerification:'boundary',category:'Italiana',location:'Centro',latitude:0,longitude:0,image:'javascript:alert(1)',rating:4,price:'$$'}]}))`)
   const setCity = city => evaluate(`(() => { const input=document.querySelector('#city'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,${JSON.stringify(city)}); input.dispatchEvent(new Event('input',{bubbles:true})); })()`)
   await evaluate(`document.querySelector('#state').value='Acre';document.querySelector('#state').dispatchEvent(new Event('change',{bubbles:true}))`)
   await setCity('Cidade Teste')
@@ -57,7 +58,7 @@ try {
   assert.equal(await evaluate('window.injected'), undefined)
   await evaluate(`document.querySelector('#results button[aria-pressed]').click()`)
   assert.equal(await evaluate(`JSON.parse(localStorage.getItem('foodrank-favorites-v1')).length`), 1)
-  await evaluate(`localStorage.setItem('foodrank-restaurants-v2-vazia-acre', JSON.stringify({timestamp:Date.now(),duration:21600000,data:[]}))`)
+  await evaluate(`localStorage.setItem(${JSON.stringify(municipalityKey('Vazia', 'Acre'))}, JSON.stringify({timestamp:Date.now(),duration:21600000,data:[]}))`)
   await setCity('Vazia')
   await evaluate(`document.querySelector('#city').focus()`)
   await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', text: '\r', windowsVirtualKeyCode: 13 })
