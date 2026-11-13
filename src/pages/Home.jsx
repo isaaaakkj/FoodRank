@@ -46,7 +46,7 @@ export default function Home() {
           onCategoryChange={setSelectedCategory}
         />
 
-        <FeaturedRestaurants key={JSON.stringify(filters)} filters={filters} />
+        <FeaturedRestaurants filters={filters} />
 
         <TimelineSection />
 

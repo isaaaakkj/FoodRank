@@ -1,0 +1,7 @@
+project_id = "foodrank"
+
+# A chave pública do projeto é conferida no handler; nenhuma conta é necessária.
+# Compatível com anon JWT e publishable quando configurados no backend.
+[functions.get-restaurants]
+verify_jwt = false
+entrypoint = "./functions/get-restaurants/index.ts"

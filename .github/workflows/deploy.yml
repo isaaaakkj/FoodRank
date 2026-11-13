@@ -44,6 +44,26 @@ jobs:
       - name: Verificar codigo
         run: npm run lint
 
+      - name: Testes obrigatorios
+        run: npm test
+
+      - name: Validar Edge Function
+        run: npx --yes deno@2.9.6 check supabase/functions/get-restaurants/index.ts
+
+      - name: Instalar navegador de testes
+        run: npx playwright install --with-deps chromium
+
+      - name: Testes de navegacao
+        run: npm run test:e2e
+
+      - name: Verificar contrato do backend antes de publicar
+        run: npm run verify:backend
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          FOODRANK_APP_ORIGIN: https://isaaaakkj.github.io
+          FOODRANK_SMOKE_CITIES_JSON: ${{ vars.FOODRANK_SMOKE_CITIES_JSON }}
+
       - name: Gerar versão de produção
         run: npm run build
         env:
@@ -63,6 +83,7 @@ jobs:
           path: ./dist
 
   deploy:
+    if: github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

@@ -1,5 +1,6 @@
 
 import { supabase } from './supabase'
+import { municipalityKey, confirmedRestaurants } from '../../supabase/functions/_shared/municipality'
 
 const CACHE_DURATION = 6 * 60 * 60 * 1000
 
@@ -14,12 +15,12 @@ function readCache(key) {
 
     const cache = JSON.parse(stored)
 
-    if (Date.now() - cache.timestamp > cache.duration) {
+    if (Date.now() - cache.timestamp >= cache.duration) {
       localStorage.removeItem(key)
       return null
     }
 
-    return Array.isArray(cache.data) && Number.isFinite(cache.timestamp) && cache.duration === CACHE_DURATION ? cache.data : null
+    return Array.isArray(cache.data) && Number.isFinite(cache.timestamp) && cache.duration === CACHE_DURATION && cache.timestamp <= Date.now() ? cache : null
   } catch {
     return null
   }
@@ -44,11 +45,7 @@ export async function getRestaurants(city, state) {
     return []
   }
 
-  const normalizedCity = city.trim().toLowerCase()
-  const normalizedState = state.trim().toLowerCase()
-
-  // A versão 2 evita reutilizar dados antigos do Overpass.
-  const cacheKey = `foodrank-restaurants-v2-${normalizedCity}-${normalizedState}`
+  const cacheKey = municipalityKey(city, state)
 
   const memoryResult = memoryCache.get(cacheKey)
 
@@ -56,18 +53,18 @@ export async function getRestaurants(city, state) {
     memoryResult &&
     Date.now() - memoryResult.timestamp < CACHE_DURATION
   ) {
-    return memoryResult.data
+    return confirmedRestaurants(memoryResult.data, city, state)
   }
 
   const savedResult = readCache(cacheKey)
 
   if (savedResult) {
     memoryCache.set(cacheKey, {
-      timestamp: Date.now(),
-      data: savedResult,
+      timestamp: savedResult.timestamp,
+      data: savedResult.data,
     })
 
-    return savedResult
+    return confirmedRestaurants(savedResult.data, city, state)
   }
 
   if (pendingRequests.has(cacheKey)) {
@@ -124,5 +121,11 @@ async function searchRestaurants(city, state) {
     )
   }
 
-  return data.restaurants.filter((item) => item && item.id != null && typeof item.name === 'string').map((item) => ({ ...item, city, state }))
+  if (data.restaurants.some(item => item && !['boundary', 'address'].includes(item.municipalityVerification))) {
+    const error = new Error('O serviço precisa confirmar o município dos restaurantes antes de exibi-los. A atualização geográfica do backend está pendente.')
+    error.code = 'MUNICIPALITY_VERIFICATION_REQUIRED'
+    throw error
+  }
+
+  return confirmedRestaurants(data.restaurants, city, state)
 }

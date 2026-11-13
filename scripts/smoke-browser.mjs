@@ -3,6 +3,7 @@ import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import assert from 'node:assert/strict'
+import { municipalityKey } from '../supabase/functions/_shared/municipality.js'
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 const profile = mkdtempSync(join(tmpdir(), 'foodrank-browser-'))
 const server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', 'preview', '--host', '127.0.0.1', '--port', '4173', '--strictPort'], { windowsHide: true, stdio: 'ignore' })
@@ -28,6 +29,13 @@ try {
       waiting.delete(message.id)
     }
     if (message.method === 'Runtime.exceptionThrown') exceptions.push(message.params.exceptionDetails.text)
+    if (message.method === 'Fetch.requestPaused') {
+      void send('Fetch.fulfillRequest', { requestId: message.params.requestId, responseCode: 200,
+        responseHeaders: [{ name: 'Content-Type', value: 'application/json' }, { name: 'Access-Control-Allow-Origin', value: '*' },
+          { name: 'Access-Control-Allow-Headers', value: 'apikey,authorization,x-client-info,content-type' },
+          { name: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS' }],
+        body: 'W10=' }).catch(() => exceptions.push('Review request mock failed'))
+    }
   })
   const send = (method, params = {}) => new Promise((resolve, reject) => { const id = ++seq; waiting.set(id, { resolve, reject }); socket.send(JSON.stringify({ id, method, params })) })
   const evaluate = async expression => {
@@ -41,14 +49,15 @@ try {
   }
   await send('Runtime.enable')
   await send('Page.enable')
+  await send('Fetch.enable', { patterns: [{ urlPattern: 'https://*.supabase.co/rest/v1/reviews*', requestStage: 'Request' }] })
   await send('Page.navigate', { url: 'http://127.0.0.1:4173/FoodRank/' })
   await until('document.querySelector("#state")')
   assert(await evaluate('document.body.innerText.includes("Selecione um estado")'))
   await evaluate('document.querySelector(".skip-link").click()')
   assert.equal(await evaluate('document.activeElement.id'), 'main-content')
   assert.equal(await evaluate('location.hash'), '')
-  assert.equal(await evaluate('document.querySelectorAll("article").length'), 3)
-  await evaluate(`localStorage.setItem('foodrank-restaurants-v2-cidade teste-acre', JSON.stringify({timestamp:Date.now(),duration:21600000,data:[{id:'test-1',name:'<img src=x onerror="window.injected=true">',city:'Cidade Teste',state:'Acre',category:'Italiana',location:'Centro',latitude:0,longitude:0,image:'javascript:alert(1)',rating:4,price:'$$'}]}))`)
+  assert.equal(await evaluate('document.querySelectorAll("#results article").length'), 0)
+  await evaluate(`localStorage.setItem(${JSON.stringify(municipalityKey('Cidade Teste', 'Acre'))}, JSON.stringify({timestamp:Date.now(),duration:21600000,data:[{id:'test-1',name:'<img src=x onerror="window.injected=true">',city:'Cidade Teste',state:'Acre',municipalityVerification:'boundary',category:'Italiana',location:'Centro',latitude:0,longitude:0,image:'javascript:alert(1)',rating:4,price:'$$'}]}))`)
   const setCity = city => evaluate(`(() => { const input=document.querySelector('#city'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,${JSON.stringify(city)}); input.dispatchEvent(new Event('input',{bubbles:true})); })()`)
   await evaluate(`document.querySelector('#state').value='Acre';document.querySelector('#state').dispatchEvent(new Event('change',{bubbles:true}))`)
   await setCity('Cidade Teste')
@@ -57,7 +66,7 @@ try {
   assert.equal(await evaluate('window.injected'), undefined)
   await evaluate(`document.querySelector('#results button[aria-pressed]').click()`)
   assert.equal(await evaluate(`JSON.parse(localStorage.getItem('foodrank-favorites-v1')).length`), 1)
-  await evaluate(`localStorage.setItem('foodrank-restaurants-v2-vazia-acre', JSON.stringify({timestamp:Date.now(),duration:21600000,data:[]}))`)
+  await evaluate(`localStorage.setItem(${JSON.stringify(municipalityKey('Vazia', 'Acre'))}, JSON.stringify({timestamp:Date.now(),duration:21600000,data:[]}))`)
   await setCity('Vazia')
   await evaluate(`document.querySelector('#city').focus()`)
   await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', text: '\r', windowsVirtualKeyCode: 13 })
@@ -79,8 +88,7 @@ try {
   await until('document.querySelector(".leaflet-popup-content")')
   await evaluate(`location.hash='/'`)
   await until('document.querySelector("#review-name")')
-  await evaluate(`document.querySelector('#review-name').form.requestSubmit()`)
-  assert(await evaluate('document.body.innerText.includes("Nenhuma avalia")'))
+  assert(await evaluate(`document.querySelector('#review-name').form.querySelector('button[type="submit"]').disabled`))
   mkdirSync('artifacts', { recursive: true })
   for (const width of [375, 768, 1440]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: width < 500 })
@@ -92,7 +100,7 @@ try {
   await evaluate(`location.hash='/missing'`)
   await until('document.querySelector("main h1")?.textContent.includes("encontrada")')
   assert.deepEqual(exceptions, [])
-  console.log('PASS: initial guidance, cached search, keyboard submit, empty results, stale results, local favorites persistence, detail reload, map XSS/zero coordinates, honest review form, 404 route, 375/768/1440 layouts; no runtime exceptions.')
+  console.log('PASS: initial guidance, cached search, keyboard submit, empty results, stale results, local favorites persistence, detail reload, map XSS/zero coordinates, review form disabled without location, 404 route, 375/768/1440 layouts; mocked reviews and no runtime exceptions.')
 } finally {
   socket?.close()
   browser.kill()
