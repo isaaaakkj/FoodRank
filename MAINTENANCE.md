@@ -16,7 +16,7 @@
 - Backend: `get-restaurants` v16 publicada em produção com autorização, usando tabela e IDs existentes, sem migração.
 - Validação local: 41 testes Vitest e lint aprovados; navegação móvel, build, verificação do artefato e análise Deno aprovados na preparação anterior. Permanece aviso de bundle acima de 500 kB.
 - Produção: contrato municipal, CORS e reutilização do cache aprovados em Santo André (294 resultados) e São Bernardo do Campo (356), sem IDs compartilhados. Cache de 24 horas confirmado no banco. Resumo da busca corrigido localmente para não informar zero resultados em erro ou carregamento.
-- Workflow: CI de pull request e testes obrigatórios; publicação manual na main exige backend compatível e cache verificado antes do build/upload.
+- Workflow: CI de pull request e testes obrigatórios; publicação na main por push ou acionamento manual exige backend compatível e cache verificado antes do build/upload.
 - Segurança: auditoria e backup verificado concluídos; limpeza do histórico preparada e não executada.
 
 ## Pendências atuais

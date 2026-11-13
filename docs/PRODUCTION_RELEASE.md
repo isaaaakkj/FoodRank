@@ -1,6 +1,6 @@
 # Preparação da publicação do FoodRank
 
-Estado em 13/11/2026: `get-restaurants` v16 publicada e validada em produção após autorização explícita do usuário, que decidiu não criar um ambiente de teste separado. Branch local `fix/foodrank-maintenance`. Não houve push, merge, publicação de Pages, migração ou reescrita do histórico. As instruções abaixo permanecem como referência operacional para próximas liberações.
+Estado em 13/11/2026: `get-restaurants` v16 publicada e validada em produção após autorização explícita do usuário, que decidiu não criar um ambiente de teste separado. Branch inicial `fix/foodrank-maintenance`; branch do PR `fix/municipality-search-tests`, criada da main atual. Não houve push direto na main, merge, publicação de Pages, migração ou reescrita do histórico. As instruções abaixo permanecem como referência operacional para próximas liberações.
 
 ## Execução autorizada concluída
 
@@ -17,7 +17,7 @@ Estado em 13/11/2026: `get-restaurants` v16 publicada e validada em produção a
 - Edge Function com contrato municipal v3, filtro por limite no Geoapify, timeout total de 55 segundos para o provedor, cache de 24 horas e compartilhamento de buscas simultâneas dentro do mesmo worker.
 - Camada HTTP testada, limite de corpo de 8 KiB, chave pública do projeto, CORS por origem e erros sem detalhes internos. Nenhuma conta ou login de visitante.
 - Reutilização da tabela `restaurant_cache`, com chaves v3 e validade de 24 horas; nenhum DDL ou alteração de políticas necessários para esta correção.
-- CI para pull requests sem segredos; deploy manual limitado à `main`, com testes e validação do backend antes do build/upload.
+- CI para pull requests sem segredos; deploy limitado à `main`, por push ou acionamento manual, com testes e validação do backend antes do build/upload. Os gatilhos já existentes na main foram preservados.
 - Verificação de contrato, origem e cache em municípios distintos antes de publicar o frontend. A verificação pode preencher cache remoto e consumir quota; executar somente no ambiente autorizado.
 
 ## Acesso e inspeção pendentes
@@ -101,7 +101,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Não publicar o frontend' }
 
 6. Conferir manualmente estabelecimentos conhecidos nos dois lados de uma divisa, homônimos em estados distintos e exemplos com endereço postal diferente do município administrativo. O teste de contrato não prova a geometria do provedor. Confirmar que anon/authenticated não podem ler ou escrever a tabela de cache diretamente e que service_role pode usá-la.
 7. Registrar evidências de homologação e aprovar separadamente produção. Atualizar backup/inspeção, configurar os segredos necessários, publicar somente a função e executar smoke test no projeto de produção aprovado. Não aplicar SQL de criação de tabela ou modificar políticas.
-8. Somente depois do backend aprovado, autorizar push/PR/merge e executar manualmente `Deploy FoodRank` na `main`. O workflow repete testes e smoke test antes de permitir Pages. Falha em qualquer verificação interrompe upload/deploy. O CI de PR não consulta produção.
+8. Somente depois do backend aprovado, autorizar a integração na `main`. O workflow existente é acionado por push na main ou manualmente e repete testes e smoke test antes de permitir Pages. Falha em qualquer verificação interrompe upload/deploy. Abrir o PR não integra código nem publica o site; o CI de PR não consulta produção.
 
 ## Reversão
 

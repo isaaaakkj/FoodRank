@@ -1,6 +1,8 @@
 # Entrega local — 13/11/2026
 
-Branch utilizada: `fix/foodrank-maintenance`, separada de `main`. Commits locais solicitados pelo usuário. A função Supabase foi publicada com autorização explícita; nenhum push, merge, deploy de Pages ou reescrita do histórico foi realizado.
+Branch inicial: `fix/foodrank-maintenance`, separada de `main`. Commits solicitados pelo usuário. A função Supabase foi publicada com autorização explícita; nenhum push direto na main, merge, deploy de Pages ou reescrita do histórico foi realizado. A branch do PR é `fix/municipality-search-tests`.
+
+Preparação do PR: como a main recebeu as avaliações reais e Turnstile durante a manutenção, os dois commits foram reaplicados em `fix/municipality-search-tests`, criada da main atual. A branch anterior foi preservada sem reescrita. Foram mantidos os fluxos de avaliações, configuração Turnstile e gatilhos de deploy existentes; os mocks de avaliações foram ajustados para manter os testes de busca sem serviços externos. O push da nova branch e a abertura do PR foram solicitados separadamente pelo usuário.
 
 ## Resultados
 

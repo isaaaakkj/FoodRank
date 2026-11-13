@@ -6,6 +6,9 @@ import Home from '../src/pages/Home'
 import { getRestaurants } from '../src/services/restaurants'
 
 vi.mock('../src/services/restaurants', () => ({ getRestaurants: vi.fn() }))
+vi.mock('../src/services/reviews', () => ({ getApprovedReviews: vi.fn().mockResolvedValue([]) }))
+// The restaurant-search tests isolate the independent review submission flow.
+vi.mock('../src/components/ReviewForm', () => ({ default: () => null }))
 const cafe = { id: 'cafe', name: 'Café São João', category: 'Café', city: 'São Paulo', state: 'São Paulo', location: 'Sé' }
 function renderHome() {
   return render(<MemoryRouter><Routes><Route path="/" element={<Home />} /><Route path="/restaurant/:id" element={<p>Detalhes abertos</p>} /></Routes></MemoryRouter>)
