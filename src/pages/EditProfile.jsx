@@ -82,7 +82,7 @@ export default function EditProfile() {
   const avatarValid = typeof avatar === 'string' && (preview || avatar.startsWith('https://'))
 
   return (
-    <main id="main-content" tabIndex={-1} className="min-h-screen bg-[#f7f3eb] px-4 py-8 text-[#28351f] md:px-8 md:py-12" style={{ fontFamily: "'Manrope', sans-serif" }}>
+    <main id="main-content" tabIndex={-1} className="foodrank-profile-edit min-h-screen bg-[#f7f3eb] px-4 py-8 text-[#28351f] md:px-8 md:py-12" style={{ fontFamily: "'Manrope', sans-serif" }}>
       <div className="mx-auto max-w-[880px]">
         <Link to="/profile" className="inline-flex items-center gap-2 text-sm font-semibold text-[#604936] hover:text-[#28351f]"><ArrowLeft size={17}/> Voltar ao perfil</Link>
         <div className="mt-9">
