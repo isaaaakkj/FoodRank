@@ -31,9 +31,9 @@ const states = [
   { uf: 'TO', name: 'Tocantins' },
 ]
 
-export default function Hero({ onLocationSearch, onLocationChange, search, onSearchChange, searchEnabled }) {
-  const [selectedState, setSelectedState] = useState('')
-  const [city, setCity] = useState('')
+export default function Hero({ initialLocation, onLocationSearch, onLocationChange, search, onSearchChange, searchEnabled }) {
+  const [selectedState, setSelectedState] = useState(initialLocation.state)
+  const [city, setCity] = useState(initialLocation.city)
   const [stateMenuOpen, setStateMenuOpen] = useState(false)
   const statePickerRef = useRef(null)
   const stateOptionRefs = useRef([])
