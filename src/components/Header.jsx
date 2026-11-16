@@ -1,11 +1,31 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { UserRound } from 'lucide-react'
+import { getMyProfile } from '../services/profiles'
 import ThemeToggle from './ThemeToggle'
 
 export default function Header() {
   const { user } = useAuth()
-  const avatar = user?.user_metadata?.avatar_url
+  const [customAvatar, setCustomAvatar] = useState('')
+
+  useEffect(() => {
+    if (!user) return undefined
+    let active = true
+    const loadAvatar = () => {
+      getMyProfile(user.id).then(data => {
+        if (active) setCustomAvatar(data?.avatar_url || '')
+      }).catch(() => { if (active) setCustomAvatar('') })
+    }
+    loadAvatar()
+    window.addEventListener('foodrank:profile-updated', loadAvatar)
+    return () => {
+      active = false
+      window.removeEventListener('foodrank:profile-updated', loadAvatar)
+    }
+  }, [user])
+
+  const avatar = customAvatar || user?.user_metadata?.avatar_url
   const avatarValid = typeof avatar === 'string' && avatar.startsWith('https://')
   return (
     <header className="w-full border-b border-[#ddd3c2]/70 bg-[#f7f3eb]">
