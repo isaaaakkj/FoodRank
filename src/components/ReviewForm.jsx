@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { MapPin, Search, Send, Star, UserRound } from 'lucide-react'
+import { MapPin, Search, Send, Star, UserRound, MessageCircle, Store, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import useRestaurants from '../hooks/useRestaurants'
@@ -160,48 +160,53 @@ export default function ReviewForm({ location, enabled = false }) {
   }
 
   return (
-    <section className="mx-auto max-w-[1000px] py-10" aria-labelledby="review-title">
-      <div className="rounded-2xl border border-[#ddd3c2] bg-[#eee7d9] p-6 md:p-8">
-        <div className="mb-7">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a88b54]">
-            Sua opinião importa
-          </p>
-          <h2 id="review-title" className="mt-1 font-display text-3xl font-semibold text-[#28351f]">
-            Deixe sua avaliação
-          </h2>
-          <p className="mt-2 text-sm text-[#6d6a61]">
-            Sua avaliação será publicada após o envio e a verificação anti-bot.
-            O comentário será vinculado à sua conta e exibirá seu nome público.
-          </p>
+    <section className="mx-auto max-w-[1100px] py-12" aria-labelledby="review-title">
+      <div className="overflow-hidden rounded-[30px] border border-[#d8cbb7] bg-[#fcfaf6] shadow-[0_24px_60px_rgba(40,53,31,.10)]">
+        <div className="relative overflow-hidden bg-[#28351f] px-6 py-9 text-[#faf8f3] sm:px-9 md:py-11">
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_93%_4%,rgba(212,182,111,.27),transparent_47%),linear-gradient(120deg,#172014,#28351f_66%,#493b2a)]" />
+          <div className="relative flex items-start gap-4">
+            <div className="mt-1 hidden h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#d4b66f]/55 text-[#d4b66f] sm:flex">
+              <MessageCircle size={29} aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[.23em] text-[#d4b66f]">Sua opinião importa</p>
+              <h2 id="review-title" className="mt-2 font-display text-3xl font-semibold leading-tight sm:text-4xl">Deixe sua avaliação</h2>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-[#eee8db] sm:text-base">
+                Conte sua experiência e ajude outras pessoas a descobrirem bons restaurantes.
+              </p>
+            </div>
+          </div>
         </div>
+        <div className="p-5 sm:p-8 md:p-10">
+          {notice && <p role="status" className="mb-6 rounded-xl border border-[#d8cbb7] bg-[#eee7d9] px-4 py-3 text-sm text-[#604936]">{notice}</p>}
 
-        {notice && <p role="status" className="mb-4 text-sm text-[#604936]">{notice}</p>}
-
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-7">
           {user ? (
-            <div className="flex items-center gap-3 rounded-xl border border-[#d8cbb7] bg-[#faf8f3] px-4 py-3">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#e8dfcf] text-[#604936]">
+            <div className="flex items-center gap-4 rounded-2xl border border-[#e0d4c2] bg-[#f1e9dc] px-4 py-4 sm:px-5">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[#d4b66f] bg-[#e8dfcf] text-[#604936] sm:h-16 sm:w-16">
                 {avatarValid ? (
                   <img src={publicAvatar} alt="" referrerPolicy="no-referrer" className="h-full w-full object-cover" />
                 ) : <UserRound size={24} aria-hidden="true" />}
               </div>
               <div className="min-w-0">
-                <p className="text-xs text-[#777269]">Avaliando como</p>
-                <p className="truncate font-semibold text-[#28351f]">{publicName}</p>
+                <p className="text-xs font-semibold uppercase tracking-[.12em] text-[#777269]">Avaliando como</p>
+                <p className="truncate text-lg font-bold text-[#28351f]">{publicName}</p>
               </div>
             </div>
           ) : (
-            <p className="rounded-xl border border-[#d8cbb7] bg-[#faf8f3] px-4 py-3 text-sm text-[#604936]">
+            <p className="rounded-2xl border border-[#d8cbb7] bg-[#f1e9dc] px-5 py-4 text-sm text-[#604936]">
               Para publicar avaliações e acompanhar o histórico, <Link to="/profile" className="font-semibold underline">entre com sua conta Google</Link>.
             </p>
           )}
 
-          <div>
-            <label htmlFor="review-restaurant" className="mb-2 block text-sm font-semibold text-[#20231d]">
-              Restaurante e unidade
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
+          <div className="min-w-0">
+            <label htmlFor="review-restaurant" className="mb-3 flex items-center gap-2 text-sm font-bold text-[#28351f]">
+              <Store size={19} className="text-[#8d7041]" aria-hidden="true" />
+              Restaurante e unidade <span className="text-[#9d4a3b]">*</span>
             </label>
             <div className="relative">
-              <div className="flex h-12 items-center gap-3 rounded-xl border border-[#d8cbb7] bg-[#faf8f3] px-4 focus-within:border-[#28351f]">
+              <div className="flex h-14 items-center gap-3 rounded-xl border border-[#d8cbb7] bg-white px-4 shadow-sm transition focus-within:border-[#d4b66f] focus-within:ring-2 focus-within:ring-[#d4b66f]/25">
                 <Search size={18} aria-hidden="true" className="shrink-0 text-[#604936]" />
                 <input
                   id="review-restaurant"
@@ -283,9 +288,12 @@ export default function ReviewForm({ location, enabled = false }) {
             )}
           </div>
 
-          <div>
-            <p id="rating-label" className="mb-2 block text-sm font-semibold text-[#20231d]">Sua nota</p>
-            <div role="group" aria-labelledby="rating-label" className="flex gap-2">
+          <div className="min-w-0 rounded-2xl border border-[#e2d7c6] bg-[#f6f0e7] p-4 sm:p-5">
+            <p id="rating-label" className="mb-3 flex items-center gap-2 text-sm font-bold text-[#28351f]">
+              <Star size={19} className="text-[#8d7041]" aria-hidden="true" />
+              Sua nota <span className="text-[#9d4a3b]">*</span>
+            </p>
+            <div role="group" aria-labelledby="rating-label" className="flex flex-wrap items-center gap-1 sm:gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
@@ -293,21 +301,20 @@ export default function ReviewForm({ location, enabled = false }) {
                   aria-pressed={star === rating}
                   aria-label={`Dar ${star} estrelas`}
                   onClick={() => setRating(star)}
-                  className="transition hover:scale-110"
+                  className="rounded-lg p-1 transition hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#28351f]"
                 >
-                  <Star
-                    size={28}
-                    fill={star <= rating ? 'currentColor' : 'none'}
-                    className={star <= rating ? 'text-[#a88b54]' : 'text-[#b9ad99]'}
-                  />
+                  <Star size={30} fill={star <= rating ? 'currentColor' : 'none'} className={star <= rating ? 'text-[#a88b54]' : 'text-[#bcae95]'} />
                 </button>
               ))}
             </div>
+            <p className="mt-3 text-xs font-semibold text-[#604936]">{rating ? `${rating} de 5 estrelas` : 'Selecione de 1 a 5 estrelas'}</p>
           </div>
+        </div>
 
           <div>
-            <label htmlFor="review-comment" className="mb-2 block text-sm font-semibold text-[#20231d]">
-              Comentário
+            <label htmlFor="review-comment" className="mb-3 flex items-center gap-2 text-sm font-bold text-[#28351f]">
+              <MessageCircle size={19} className="text-[#8d7041]" aria-hidden="true" />
+              Seu comentário <span className="text-[#9d4a3b]">*</span>
             </label>
             <textarea
               id="review-comment"
@@ -317,21 +324,36 @@ export default function ReviewForm({ location, enabled = false }) {
               value={comment}
               onChange={(event) => setComment(event.target.value)}
               rows={5}
-              placeholder="Conte como foi sua experiência..."
-              className="w-full resize-none rounded-xl border border-[#d8cbb7] bg-[#faf8f3] p-4 text-sm outline-none focus:border-[#28351f]"
+              placeholder="O que você achou do restaurante? Conte sobre atendimento, comida e ambiente..."
+              className="w-full min-h-44 resize-y rounded-2xl border border-[#d8cbb7] bg-white p-5 text-sm leading-7 text-[#20231d] shadow-sm outline-none transition focus:border-[#d4b66f] focus:ring-2 focus:ring-[#d4b66f]/25"
             />
+            <div className="mt-2 flex justify-between gap-3 text-xs text-[#777269]">
+              <span>Mínimo de 10 caracteres</span>
+              <span aria-live="polite">{comment.length}/2000</span>
+            </div>
           </div>
 
           <Turnstile key={widgetVersion} onToken={setToken} />
-          <button
-            type="submit"
-            disabled={!canSubmit}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#28351f] px-6 text-sm font-semibold text-[#f7f3eb] transition hover:bg-[#4b5b3d] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-          >
-            <Send size={17} />
-            {submitting ? 'Enviando...' : 'Enviar avaliação'}
-          </button>
+          <div className="flex flex-wrap items-center justify-end gap-3 border-t border-[#e2d7c6] pt-6">
+            <button
+              type="button"
+              onClick={() => { setSearch(''); setSelectedKey(''); setRating(0); setComment(''); setNotice('') }}
+              disabled={submitting}
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-[#cfc0a6] px-6 text-sm font-bold text-[#604936] transition hover:bg-[#eee7d9] disabled:opacity-50"
+            >
+              <X size={17} /> Limpar
+            </button>
+            <button
+              type="submit"
+              disabled={!canSubmit}
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#28351f] px-7 text-sm font-bold text-[#faf8f3] shadow-md transition hover:bg-[#4b5b3d] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Send size={17} />
+              {submitting ? 'Publicando...' : 'Publicar avaliação'}
+            </button>
+          </div>
         </form>
+        </div>
       </div>
     </section>
   )
