@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { useAuth } from '../auth/AuthContext'
+import { useAuth } from '../auth/useAuth'
 import { Search, Bell, UserRound } from 'lucide-react'
 
 export default function Header({ search, onSearchChange }) {
