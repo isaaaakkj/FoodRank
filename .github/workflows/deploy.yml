@@ -50,6 +50,9 @@ jobs:
       - name: Validar Edge Function
         run: npx --yes deno@2.9.6 check supabase/functions/get-restaurants/index.ts
 
+      - name: Validar Edge Function de avaliações
+        run: npx --yes deno@2.9.6 check supabase/functions/submit-review/index.ts
+
       - name: Instalar navegador de testes
         run: npx playwright install --with-deps chromium
 
