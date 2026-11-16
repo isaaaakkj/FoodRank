@@ -199,8 +199,8 @@ export default function ReviewForm({ location, enabled = false }) {
             </p>
           )}
 
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
-          <div className="min-w-0">
+          <div className="grid items-stretch gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
+          <div className="min-w-0 rounded-2xl border border-[#e2d7c6] bg-[#f6f0e7] p-4 sm:p-5">
             <label htmlFor="review-restaurant" className="mb-3 flex items-center gap-2 text-sm font-bold text-[#28351f]">
               <Store size={19} className="text-[#8d7041]" aria-hidden="true" />
               Restaurante e unidade <span className="text-[#9d4a3b]">*</span>
@@ -293,7 +293,7 @@ export default function ReviewForm({ location, enabled = false }) {
               <Star size={19} className="text-[#8d7041]" aria-hidden="true" />
               Sua nota <span className="text-[#9d4a3b]">*</span>
             </p>
-            <div role="group" aria-labelledby="rating-label" className="flex flex-wrap items-center gap-1 sm:gap-2">
+            <div role="group" aria-labelledby="rating-label" className="flex min-h-14 flex-wrap items-center gap-1 sm:gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
