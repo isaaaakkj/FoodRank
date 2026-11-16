@@ -3,12 +3,13 @@ import { ArrowLeft, Camera, Check, ImagePlus, Save, UserRound, X } from 'lucide-
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { getMyProfile, saveMyProfile, uploadMyAvatar, removeUploadedAvatar } from '../services/profiles'
+import { BANNER_COLORS, DEFAULT_BANNER_COLOR } from '../data/bannerColors'
 
 export default function EditProfile() {
   const { user, loading: authLoading, available } = useAuth()
   const navigate = useNavigate()
   const [profile, setProfile] = useState(null)
-  const [form, setForm] = useState({ username: '', display_name: '', bio: '' })
+  const [form, setForm] = useState({ username: '', display_name: '', bio: '', banner_color: DEFAULT_BANNER_COLOR })
   const [photo, setPhoto] = useState(null)
   const [preview, setPreview] = useState('')
   const [loading, setLoading] = useState(true)
@@ -26,6 +27,7 @@ export default function EditProfile() {
           username: data.username || '',
           display_name: data.display_name || '',
           bio: data.bio || '',
+          banner_color: data.banner_color || DEFAULT_BANNER_COLOR,
         })
       })
       .catch(err => { if (active) setError(err.message) })
@@ -117,6 +119,36 @@ export default function EditProfile() {
                   {photo && (
                     <button type="button" onClick={() => { setPhoto(null); setPreview('') }} className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[#6b3434]"><X size={14}/> Descartar nova foto</button>
                   )}
+                </div>
+              </div>
+            </section>
+
+            <section className="overflow-hidden rounded-[28px] border border-[#e4dac9] bg-[#fcfaf6] shadow-sm" aria-labelledby="banner-color-title">
+              <div className="p-6 md:p-9">
+                <h2 id="banner-color-title" className="text-xl font-bold text-[#28351f]">Cor da capa</h2>
+                <p className="mt-2 text-sm leading-6 text-[#777269]">Escolha um tom para combinar com sua foto. A capa fica lisa e sem desenhos.</p>
+                <div className="mt-5 overflow-hidden rounded-2xl border border-[#d8cbb7]">
+                  <div className="h-24 w-full transition-colors" style={{ backgroundColor: form.banner_color }} aria-label="Prévia da cor da capa" />
+                  <div className="flex items-center gap-3 bg-[#fcfaf6] px-5 py-3">
+                    <span className="text-sm font-semibold text-[#28351f]">Prévia da capa</span>
+                    <span className="ml-auto text-xs text-[#777269]">{BANNER_COLORS.find(color => color.value === form.banner_color)?.name}</span>
+                  </div>
+                </div>
+                <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3" role="group" aria-label="Escolher cor da capa">
+                  {BANNER_COLORS.map(color => (
+                    <button
+                      key={color.value}
+                      type="button"
+                      aria-label={color.name}
+                      aria-pressed={form.banner_color === color.value}
+                      onClick={() => setForm(current => ({ ...current, banner_color: color.value }))}
+                      className={`flex items-center gap-3 rounded-xl border px-3 py-3 text-left text-xs font-semibold transition ${form.banner_color === color.value ? 'border-[#a88b54] ring-2 ring-[#a88b54]/30' : 'border-[#d8cbb7] hover:border-[#a88b54]'}`}
+                    >
+                      <span className="h-7 w-7 shrink-0 rounded-full border border-black/10" style={{ backgroundColor: color.value }} />
+                      <span className="min-w-0 flex-1 text-[#28351f]">{color.name}</span>
+                      {form.banner_color === color.value && <Check size={16} className="shrink-0 text-[#a88b54]" />}
+                    </button>
+                  ))}
                 </div>
               </div>
             </section>
