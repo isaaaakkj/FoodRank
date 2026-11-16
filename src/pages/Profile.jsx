@@ -1,165 +1,160 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeft, LogOut, Save, Star, UserRound } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, CalendarDays, LogOut, MapPin, Pencil, Star, UserRound, UtensilsCrossed } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
-import { getMyProfile, getMyReviewHistory, saveMyProfile } from '../services/profiles'
+import { getMyProfile, getMyReviewHistory } from '../services/profiles'
+
+const dateFormat = value => {
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString('pt-BR')
+}
 
 export default function Profile() {
   const { user, loading: authLoading, available, error: authError, signIn, signOut } = useAuth()
   const [profile, setProfile] = useState(null)
-  const [form, setForm] = useState({ username: '', display_name: '', bio: '' })
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
   useEffect(() => {
-    if (!user) return undefined
-    let cancelled = false
-
-    async function load() {
-      setLoading(true)
-      setError('')
-      try {
-        const [data, reviews] = await Promise.all([
-          getMyProfile(user.id),
-          getMyReviewHistory(user.id),
-        ])
-        if (cancelled) return
-        setProfile(data)
-        setHistory(reviews)
-        setForm({ username: data.username, display_name: data.display_name, bio: data.bio })
-      } catch (err) {
-        if (!cancelled) setError(err.message)
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-    load()
-    return () => { cancelled = true }
+    if (!user) { setProfile(null); setHistory([]); return undefined }
+    let active = true
+    setLoading(true)
+    setError('')
+    Promise.all([getMyProfile(user.id), getMyReviewHistory(user.id)])
+      .then(([data, reviews]) => {
+        if (active) { setProfile(data); setHistory(reviews) }
+      })
+      .catch(err => { if (active) setError(err.message) })
+      .finally(() => { if (active) setLoading(false) })
+    return () => { active = false }
   }, [user])
 
-  async function submit(event) {
-    event.preventDefault()
-    setSaving(true)
-    setError('')
-    setMessage('')
-    try {
-      const updated = await saveMyProfile(user.id, form)
-      setProfile(updated)
-      setForm({ username: updated.username, display_name: updated.display_name, bio: updated.bio })
-      setMessage('Perfil atualizado com sucesso.')
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  async function login() {
-    setError('')
+  async function handleSignIn() {
     try { await signIn() } catch { setError('Não foi possível iniciar o login com Google.') }
   }
 
-  async function logout() {
-    setError('')
+  async function handleSignOut() {
     try { await signOut() } catch { setError('Não foi possível sair da conta.') }
   }
 
-  const avatarUrl = profile?.avatar_url
-  const validAvatar = typeof avatarUrl === 'string' && avatarUrl.startsWith('https://')
+  const fallbackAvatar = user?.user_metadata?.avatar_url
+  const avatarUrl = profile?.avatar_url || fallbackAvatar
+  const avatarValid = typeof avatarUrl === 'string' && avatarUrl.startsWith('https://')
+  const approved = history.filter(review => review.status === 'approved')
+  const average = approved.length
+    ? (approved.reduce((sum, review) => sum + Number(review.rating || 0), 0) / approved.length).toFixed(1)
+    : '—'
 
   return (
-    <main id="main-content" tabIndex={-1} className="min-h-screen bg-[#f7f3eb] px-4 py-8 text-[#28351f]">
-      <div className="mx-auto max-w-[1000px]">
-        <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-[#604936]">
-          <ArrowLeft size={17} /> Voltar para explorar
-        </Link>
+    <main id="main-content" tabIndex={-1} className="min-h-screen bg-[#f7f3eb] px-4 py-8 text-[#28351f] md:px-8 md:py-12" style={{ fontFamily: "'Manrope', sans-serif" }}>
+      <div className="mx-auto max-w-[1100px]">
+        <div className="flex items-center justify-between gap-4">
+          <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-[#604936] transition hover:text-[#28351f]">
+            <ArrowLeft size={17} /> Voltar para explorar
+          </Link>
+          <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#a88b54]">FoodRank / Comunidade</span>
+        </div>
 
-        <h1 className="mt-7 font-display text-4xl font-semibold">Meu perfil</h1>
-
-        {authError && <p role="alert" className="mt-4 text-[#6b3434]">{authError}</p>}
-        {error && <p role="alert" className="mt-4 text-[#6b3434]">{error}</p>}
-        {message && <p role="status" className="mt-4 text-[#365537]">{message}</p>}
+        {authError && <p role="alert" className="mt-5 text-[#6b3434]">{authError}</p>}
+        {error && <p role="alert" className="mt-5 text-[#6b3434]">{error}</p>}
 
         {!available ? (
-          <section className="mt-7 rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-8">
-            O login está indisponível até configurar as chaves públicas do Supabase.
-          </section>
-        ) : authLoading ? (
-          <p role="status" className="mt-6">Verificando sessão...</p>
+          <section className="mt-9 rounded-3xl bg-white p-10 shadow-sm">O acesso à conta está indisponível até configurar o Supabase.</section>
+        ) : authLoading || (user && loading) ? (
+          <p role="status" className="mt-10">Carregando seu perfil...</p>
         ) : !user ? (
-          <section className="mt-7 rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-8 text-center">
-            <UserRound size={44} className="mx-auto text-[#604936]" />
-            <h2 className="mt-4 font-display text-2xl">Entre para criar seu perfil</h2>
-            <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-[#6d6a61]">
-              Use sua conta Google para ter nome, foto de perfil, @usuário exclusivo, biografia e histórico de novas avaliações vinculadas à sua conta.
-            </p>
-            <button onClick={login} className="mt-6 rounded-full bg-[#28351f] px-7 py-3 font-semibold text-white">
-              Continuar com Google
-            </button>
+          <section className="relative mt-9 overflow-hidden rounded-[32px] bg-[#28351f] px-6 py-16 text-center text-[#f7f3eb] md:px-16">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,rgba(212,182,111,.24),transparent_45%)]" />
+            <div className="relative">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-[#d4b66f]/50 bg-white/10"><UserRound size={37} /></div>
+              <p className="mt-7 text-xs font-bold uppercase tracking-[0.24em] text-[#d4b66f]">Sua experiência gastronômica</p>
+              <h1 className="mx-auto mt-3 max-w-xl text-5xl leading-tight md:text-6xl" style={{ fontFamily: "'Fraunces', Georgia, serif" }}>Um espaço com o seu sabor.</h1>
+              <p className="mx-auto mt-5 max-w-lg leading-7 text-[#eee8db]">Entre com Google para personalizar sua foto, escolher seu @usuário e acompanhar suas avaliações.</p>
+              <button onClick={handleSignIn} className="mt-8 rounded-full bg-[#d4b66f] px-8 py-3.5 text-sm font-bold text-[#28351f] transition hover:bg-[#e6ca83]">Continuar com Google</button>
+            </div>
           </section>
-        ) : loading ? (
-          <p role="status" className="mt-6">Carregando perfil e avaliações...</p>
         ) : profile ? (
           <>
-            <section className="mt-7 rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-6 md:p-8">
-              <div className="flex flex-wrap items-start gap-5">
-                <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#e8dfcf] text-[#604936]">
-                  {validAvatar ? (
-                    <img src={avatarUrl} alt="Foto de perfil da conta Google" referrerPolicy="no-referrer" className="h-full w-full object-cover" />
-                  ) : <UserRound size={40} />}
+            <section className="relative mt-9 overflow-hidden rounded-[32px] bg-[#28351f] text-[#faf8f3] shadow-[0_20px_60px_rgba(40,53,31,.14)]">
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_5%,rgba(212,182,111,.23),transparent_42%),linear-gradient(125deg,#172014,#28351f_65%,#493b2a)]" />
+              <div className="relative px-6 pb-8 pt-10 md:px-12 md:pb-12 md:pt-14">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <p className="text-xs font-bold uppercase tracking-[0.26em] text-[#d4b66f]">O meu espaço no FoodRank</p>
+                  <button onClick={handleSignOut} className="inline-flex items-center gap-2 rounded-full border border-white/25 px-4 py-2 text-xs font-semibold text-[#f7f3eb] transition hover:bg-white/10"><LogOut size={15} /> Sair</button>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <h2 className="font-display text-2xl font-semibold">{profile.display_name}</h2>
-                  <p className="mt-1 break-all text-[#604936]">@{profile.username}</p>
-                  <p className="mt-2 text-sm text-[#6d6a61]">{profile.bio || 'Adicione uma descrição sobre você.'}</p>
+                <div className="mt-10 flex flex-col items-start gap-6 sm:flex-row sm:items-center md:gap-9">
+                  <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-full border-[5px] border-[#d4b66f] bg-[#e8dfcf] text-[#604936] shadow-xl md:h-36 md:w-36">
+                    {avatarValid ? <img src={avatarUrl} alt="Foto do perfil" referrerPolicy="no-referrer" className="h-full w-full object-cover" /> : <UserRound size={54} />}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#d4b66f]">Explorador gastronômico</p>
+                    <h1 className="mt-2 break-words text-4xl leading-tight md:text-6xl" style={{ fontFamily: "'Fraunces', Georgia, serif" }}>{profile.display_name}</h1>
+                    <p className="mt-2 break-all text-base font-semibold text-[#d4b66f]">@{profile.username}</p>
+                    <p className="mt-4 max-w-xl whitespace-pre-wrap break-words text-sm leading-7 text-[#eee8db]">{profile.bio || 'Cada descoberta merece uma história. Adicione uma apresentação sobre você.'}</p>
+                  </div>
                 </div>
-                <button onClick={logout} className="inline-flex items-center gap-2 rounded-full border border-[#d8cbb7] px-4 py-2 text-sm font-semibold">
-                  <LogOut size={16} /> Sair
-                </button>
+                <div className="mt-9 flex flex-wrap gap-3">
+                  <Link to="/profile/edit" className="inline-flex items-center gap-2 rounded-full bg-[#d4b66f] px-6 py-3 text-sm font-bold text-[#28351f] transition hover:bg-[#e5c984]"><Pencil size={17} /> Editar perfil</Link>
+                  <Link to="/" className="inline-flex items-center gap-2 rounded-full border border-white/35 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10">Explorar restaurantes <ArrowUpRight size={17}/></Link>
+                </div>
               </div>
-
-              <form onSubmit={submit} className="mt-8 grid gap-4">
-                <h3 className="font-display text-xl font-semibold">Editar perfil</h3>
-                <label htmlFor="profile-name" className="text-sm font-semibold">Nome público</label>
-                <input id="profile-name" maxLength={80} minLength={2} required className="rounded-xl border border-[#d8cbb7] bg-white px-4 py-3" value={form.display_name} onChange={e => setForm(v => ({ ...v, display_name: e.target.value }))} />
-                <label htmlFor="profile-username" className="text-sm font-semibold">@usuário único</label>
-                <input id="profile-username" maxLength={40} minLength={3} required pattern="[a-z0-9_]{3,40}" title="Somente letras minúsculas, números e _" className="rounded-xl border border-[#d8cbb7] bg-white px-4 py-3" value={form.username} onChange={e => setForm(v => ({ ...v, username: e.target.value.toLowerCase() }))} />
-                <p className="text-xs text-[#6d6a61]">Seu @usuário é exclusivo. Use 3–40 caracteres: letras minúsculas, números ou _.</p>
-                <label htmlFor="profile-bio" className="text-sm font-semibold">Descrição</label>
-                <textarea id="profile-bio" rows={3} maxLength={300} className="resize-y rounded-xl border border-[#d8cbb7] bg-white px-4 py-3" placeholder="Conte um pouco sobre você..." value={form.bio} onChange={e => setForm(v => ({ ...v, bio: e.target.value }))} />
-                <p className="text-right text-xs text-[#6d6a61]">{form.bio.length}/300</p>
-                <button type="submit" disabled={saving} className="inline-flex w-fit items-center gap-2 rounded-full bg-[#28351f] px-6 py-3 font-semibold text-white disabled:opacity-50">
-                  <Save size={16} /> {saving ? 'Salvando...' : 'Salvar alterações'}
-                </button>
-                <p className="text-xs text-[#6d6a61]">A foto é importada da conta Google na criação do perfil. Não exibimos seu e-mail publicamente.</p>
-              </form>
             </section>
 
-            <section className="mt-8 rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-6 md:p-8">
-              <h2 className="font-display text-2xl font-semibold">Histórico de avaliações</h2>
-              <p className="mt-2 text-sm text-[#6d6a61]">Avaliações publicadas após entrar com esta conta. Comentários antigos enviados sem login não podem ser vinculados automaticamente.</p>
+            <div className="mt-6 grid gap-4 sm:grid-cols-3">
+              {[
+                { label: 'Avaliações enviadas', value: history.length, Icon: UtensilsCrossed },
+                { label: 'Avaliações publicadas', value: approved.length, Icon: CalendarDays },
+                { label: 'Média das avaliações', value: average, Icon: Star },
+              ].map(({ label, value, Icon }) => (
+                <div key={label} className="rounded-3xl border border-[#e2d7c6] bg-[#fcfaf6] p-6">
+                  <Icon size={21} className="text-[#a88b54]" />
+                  <p className="mt-4 text-3xl font-semibold text-[#28351f]">{value}</p>
+                  <p className="mt-1 text-sm text-[#6d6a61]">{label}</p>
+                </div>
+              ))}
+            </div>
+
+            <section className="mt-12 pb-12">
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.23em] text-[#a88b54]">Memórias à mesa</p>
+                  <h2 className="mt-2 text-3xl md:text-4xl" style={{ fontFamily: "'Fraunces', Georgia, serif" }}>Minhas avaliações</h2>
+                </div>
+                <span className="rounded-full border border-[#ddd3c2] px-4 py-2 text-xs font-semibold text-[#604936]">{history.length} registros</span>
+              </div>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-[#6d6a61]">As avaliações vinculadas à sua conta aparecem aqui. Comentários antigos publicados sem login não são vinculados automaticamente.</p>
+
               {history.length ? (
-                <div className="mt-5">
+                <div className="mt-7 grid gap-4 md:grid-cols-2">
                   {history.map(review => (
-                    <article key={review.id} className="border-t border-[#ddd3c2] py-5">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <Link to={`/restaurant/${encodeURIComponent(review.restaurant_id)}?city=${encodeURIComponent(review.city)}&state=${encodeURIComponent(review.state)}`} className="font-semibold underline decoration-[#c5b9a7] underline-offset-4">
-                          {review.restaurant_name}
-                        </Link>
-                        <span className="text-xs text-[#6d6a61]">{new Date(review.created_at).toLocaleDateString('pt-BR')} · {review.status === 'approved' ? 'Publicada' : review.status === 'pending' ? 'Em análise' : 'Não aprovada'}</span>
+                    <article key={review.id} className="rounded-3xl border border-[#e2d7c6] bg-[#fcfaf6] p-6">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <span className="rounded-full bg-[#eee7d9] px-3 py-1 text-xs font-bold text-[#604936]">{review.status === 'approved' ? 'Publicada' : review.status === 'pending' ? 'Em análise' : 'Não aprovada'}</span>
+                        <span className="text-xs text-[#777269]">{dateFormat(review.created_at)}</span>
                       </div>
-                      <p className="mt-2 flex items-center gap-1 text-sm text-[#604936]"><Star size={15} fill="currentColor" /> {review.rating}/5</p>
-                      <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6">{review.comment}</p>
+                      <Link to={`/restaurant/${encodeURIComponent(review.restaurant_id)}?city=${encodeURIComponent(review.city)}&state=${encodeURIComponent(review.state)}`} className="mt-5 inline-flex items-center gap-2 text-xl font-semibold text-[#28351f] hover:underline">
+                        {review.restaurant_name} <ArrowUpRight size={17}/>
+                      </Link>
+                      <p className="mt-2 flex items-center gap-1 text-xs text-[#777269]"><MapPin size={13}/>{review.city}, {review.state}</p>
+                      <p className="mt-4 flex items-center gap-1 text-sm font-bold text-[#8d7041]"><Star size={17} fill="currentColor"/> {review.rating}/5</p>
+                      <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-7 text-[#604936]">{review.comment}</p>
                     </article>
                   ))}
                 </div>
-              ) : <p className="mt-5 text-sm text-[#6d6a61]">Você ainda não enviou avaliações com esta conta.</p>}
+              ) : (
+                <div className="mt-7 rounded-3xl border border-dashed border-[#cfc0a6] bg-[#fcfaf6] px-6 py-12 text-center">
+                  <UtensilsCrossed size={32} className="mx-auto text-[#a88b54]" />
+                  <h3 className="mt-4 text-xl font-semibold">Sua história começa com uma descoberta.</h3>
+                  <p className="mt-2 text-sm text-[#6d6a61]">Você ainda não enviou avaliações com esta conta.</p>
+                  <Link to="/" className="mt-5 inline-flex rounded-full bg-[#28351f] px-6 py-3 text-sm font-bold text-white">Encontrar restaurantes</Link>
+                </div>
+              )}
             </section>
           </>
-        ) : null}
+        ) : (
+          <p role="status" className="mt-9">Não foi possível exibir o perfil.</p>
+        )}
       </div>
     </main>
   )
