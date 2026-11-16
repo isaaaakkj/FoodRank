@@ -140,3 +140,14 @@ html[data-theme="dark"] [class~="bg-[#28351f]"][class~="text-[#f7f3eb]"] { color
 /* Componentes ainda com o tema claro explícito em campos do formulário. */
 html[data-theme="dark"] [class~="bg-transparent"] { background-color: transparent; }
 html[data-theme="dark"] .skip-link { color: var(--theme-heading); }
+
+/* Perfil: foco suave sem a moldura quadrada sobre os campos de edição. */
+.profile-edit-form input:focus-visible,
+.profile-edit-form textarea:focus-visible {
+  outline: none;
+}
+.profile-edit-form .profile-edit-input:focus,
+.profile-edit-form .profile-edit-input:focus-within {
+  border-color: #a88b54;
+  box-shadow: 0 2px 0 #a88b54, 0 4px 12px rgba(168, 139, 84, 0.12);
+}
