@@ -42,7 +42,10 @@ begin
   on conflict (id) do nothing;
   return new;
 end;
-$$;
+$;
+
+-- Trigger interno: não disponibilizar a função SECURITY DEFINER pela API.
+revoke all on function public.initialize_foodrank_profile() from public, anon, authenticated;
 
 drop trigger if exists foodrank_user_created on auth.users;
 create trigger foodrank_user_created after insert on auth.users
