@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
 import { MapPin, Search, Send, Star } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { useAuth } from '../auth/AuthContext'
 import useRestaurants from '../hooks/useRestaurants'
 import Turnstile from './Turnstile'
 import { isTurnstileConfigured } from '../services/turnstileConfig'
@@ -23,9 +25,9 @@ function restaurantKey(item) {
 }
 
 export default function ReviewForm({ location, enabled = false }) {
+  const { user } = useAuth()
   const { restaurants, loading, error } = useRestaurants(location?.city, location?.state, enabled)
   const [notice, setNotice] = useState('')
-  const [name, setName] = useState('')
   const [search, setSearch] = useState('')
   const [selectedKey, setSelectedKey] = useState('')
   const [suggestionsOpen, setSuggestionsOpen] = useState(false)
@@ -57,6 +59,7 @@ export default function ReviewForm({ location, enabled = false }) {
 
   const canSubmit =
     enabled &&
+    Boolean(user) &&
     Boolean(selected) &&
     isTurnstileConfigured &&
     Boolean(token) &&
@@ -108,15 +111,14 @@ export default function ReviewForm({ location, enabled = false }) {
     event.preventDefault()
     setNotice('')
 
-    if (!canSubmit || name.trim().length < 2 || comment.trim().length < 10 || rating < 1) {
-      setNotice('Preencha nome, escolha uma filial da lista, nota, comentário (mínimo 10 caracteres) e verificação anti-bot.')
+    if (!canSubmit || comment.trim().length < 10 || rating < 1) {
+      setNotice('Entre na sua conta, escolha uma filial da lista, nota, comentário (mínimo 10 caracteres) e verificação anti-bot.')
       return
     }
 
     setSubmitting(true)
     try {
       const response = await submitReview({
-        author_name: name.trim(),
         restaurant_id: String(selected.id),
         restaurant_name: selected.name,
         city: selected.city || location.city,
@@ -126,7 +128,6 @@ export default function ReviewForm({ location, enabled = false }) {
       }, token)
 
       setNotice(response.message || 'Avaliação publicada com sucesso.')
-      setName('')
       setSearch('')
       setSelectedKey('')
       setSuggestionsOpen(false)
@@ -153,29 +154,22 @@ export default function ReviewForm({ location, enabled = false }) {
           </h2>
           <p className="mt-2 text-sm text-[#6d6a61]">
             Sua avaliação será publicada após o envio e a verificação anti-bot.
-            Use um apelido e não informe dados pessoais.
+            O comentário será vinculado à sua conta e exibirá seu nome público.
           </p>
         </div>
 
         {notice && <p role="status" className="mb-4 text-sm text-[#604936]">{notice}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label htmlFor="review-name" className="mb-2 block text-sm font-semibold text-[#20231d]">
-              Seu nome ou apelido
-            </label>
-            <input
-              id="review-name"
-              required
-              minLength={2}
-              maxLength={80}
-              type="text"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder="Ex.: Maria"
-              className="h-12 w-full rounded-xl border border-[#d8cbb7] bg-[#faf8f3] px-4 text-sm outline-none focus:border-[#28351f]"
-            />
-          </div>
+          {user ? (
+            <p className="rounded-xl border border-[#d8cbb7] bg-[#faf8f3] px-4 py-3 text-sm text-[#604936]">
+              Avaliação vinculada à sua conta Google. Seu nome público será obtido do perfil.
+            </p>
+          ) : (
+            <p className="rounded-xl border border-[#d8cbb7] bg-[#faf8f3] px-4 py-3 text-sm text-[#604936]">
+              Para publicar avaliações e acompanhar o histórico, <Link to="/profile" className="font-semibold underline">entre com sua conta Google</Link>.
+            </p>
+          )}
 
           <div>
             <label htmlFor="review-restaurant" className="mb-2 block text-sm font-semibold text-[#20231d]">
