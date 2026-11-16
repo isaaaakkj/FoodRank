@@ -15,11 +15,7 @@ test('busca no celular, filtros, escolha de filial e detalhes sem serviços exte
       { id: 'cafe-outra-filial', name: 'Café São João', category: 'Café', city: 'São Paulo', state: 'São Paulo', location: 'Pinheiros', latitude: -23.565, longitude: -46.692 }
     ] }`,
   }))
-  page.on('pageerror', error => console.log('BROWSER PAGE ERROR:', error.message))
-  page.on('console', message => { if (message.type() === 'error') console.log('BROWSER CONSOLE ERROR:', message.text()) })
-  page.on('response', response => { if (response.status() >= 400) console.log('FAILED HTTP:', response.status(), response.url()) })
   await page.goto('./')
-  console.log('INITIAL SCREEN:', (await page.locator('body').innerText()).slice(0, 700))
   const restaurantFilter = page.getByRole('searchbox', { name: 'Pesquisar restaurantes' })
   await expect(restaurantFilter).toBeDisabled()
   await page.getByRole('button', { name: 'Estado' }).click()
