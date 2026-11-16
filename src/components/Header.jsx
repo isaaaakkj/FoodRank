@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
-import { Search, Bell, UserRound } from 'lucide-react'
+import { UserRound } from 'lucide-react'
 
-export default function Header({ search, onSearchChange }) {
+export default function Header() {
   const { user } = useAuth()
   const avatar = user?.user_metadata?.avatar_url
   const avatarValid = typeof avatar === 'string' && avatar.startsWith('https://')
@@ -31,28 +31,6 @@ export default function Header({ search, onSearchChange }) {
           </div>
         </div>
 
-        {/* Busca */}
-        <div className="order-last w-full md:order-none md:max-w-[400px] md:flex-1">
-          <div className="flex h-11 items-center gap-3 rounded-full border border-[#d8cbb7] bg-[#faf8f3] px-5 transition focus-within:border-[#28351f]">
-
-            <Search
-              size={19}
-              strokeWidth={1.7}
-              className="text-[#604936]"
-            />
-
-            <input
-              aria-label="Filtrar restaurantes por nome, cozinha ou localização"
-              type="search"
-              value={search}
-              onChange={(event) => onSearchChange(event.target.value)}
-              placeholder="Filtrar restaurantes, cozinhas ou localização"
-              className="w-full bg-transparent text-sm text-[#20231d] outline-none placeholder:text-[#777269]"
-            />
-
-          </div>
-        </div>
-
         {/* Navegação */}
         <nav aria-label="Navegação principal" className="ml-auto flex flex-wrap items-center gap-4">
           <Link to="/" className="text-sm font-semibold text-[#28351f]">Explorar</Link>
@@ -64,19 +42,8 @@ export default function Header({ search, onSearchChange }) {
 
         {/* Ações */}
         <div className="flex items-center gap-5">
-          <button
-            disabled title="Notificações indisponíveis neste MVP" aria-label="Notificações indisponíveis"
-            className="text-[#20231d] transition hover:text-[#28351f]"
-          >
-            <Bell size={21} strokeWidth={1.7} />
-          </button>
-
-          <Link
-            to="/profile"
-            title={user ? 'Meu perfil' : 'Entrar com Google'}
-            aria-label={user ? 'Meu perfil' : 'Entrar com Google'}
-            className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-[#d8cbb7] bg-[#e8dfcf]"
-          >
+          <Link to="/profile" title={user ? 'Meu perfil' : 'Entrar com Google'} aria-label={user ? 'Meu perfil' : 'Entrar com Google'}
+            className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-[#d8cbb7] bg-[#e8dfcf]">
             {avatarValid ? <img src={avatar} referrerPolicy="no-referrer" alt="" className="h-full w-full object-cover" /> : <UserRound size={20} className="text-[#604936]" />}
           </Link>
         </div>

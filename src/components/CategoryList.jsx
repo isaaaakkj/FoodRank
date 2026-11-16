@@ -23,10 +23,6 @@ const categories = [
               Encontre seu próximo sabor
             </h2>
           </div>
-  
-          <button onClick={() => onCategoryChange('Todos')} className="hidden text-sm font-semibold text-[#604936] transition hover:text-[#28351f] sm:block">
-            Ver todas
-          </button>
         </div>
   
         <div className="flex gap-3 overflow-x-auto pb-2">
