@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Search, Bell, UserRound } from 'lucide-react'
+import { Search, UserRound } from 'lucide-react'
 
 export default function Header({ search, onSearchChange }) {
   return (
@@ -60,13 +60,6 @@ export default function Header({ search, onSearchChange }) {
 
         {/* Ações */}
         <div className="flex items-center gap-5">
-          <button
-            disabled title="Notificações indisponíveis neste MVP" aria-label="Notificações indisponíveis"
-            className="text-[#20231d] transition hover:text-[#28351f]"
-          >
-            <Bell size={21} strokeWidth={1.7} />
-          </button>
-
           <button
             disabled title="O FoodRank não utiliza contas" aria-label="Perfil indisponível"
             className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-[#d8cbb7] bg-[#e8dfcf]"
