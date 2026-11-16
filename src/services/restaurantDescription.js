@@ -27,6 +27,6 @@ export function getRestaurantDescription(restaurant) {
   const label = categoryDescriptions[category.toLocaleLowerCase('pt-BR')] ||
     (category ? `Restaurante de culinária ${category.toLocaleLowerCase('pt-BR')}` : 'Restaurante')
 
-  const locationSentence = place ? ` localizado em ${place}` : ''
+  const locationSentence = place ? ` em ${place}` : ''
   return `${label}${locationSentence}. Consulte a localização no mapa e as avaliações dos visitantes para conhecer melhor esta unidade.`
 }
