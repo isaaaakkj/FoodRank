@@ -1,4 +1,4 @@
-import { safeImageUrl, fallbackImage } from '../services/images'
+import RestaurantPhoto from './RestaurantPhoto'
 import FavoriteButton from './FavoriteButton'
 import { MapPin } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
@@ -17,10 +17,9 @@ export default function RestaurantCard({ restaurant }) {
     <article className="group overflow-hidden rounded-2xl border border-[#ded5c6] bg-[#faf8f3] transition duration-300 hover:-translate-y-1 hover:shadow-lg">
 
       <div className="relative h-56 overflow-hidden">
-        <img
-          src={safeImageUrl(restaurant.image)} loading="lazy" referrerPolicy="no-referrer" onError={event => { event.currentTarget.onerror = null; event.currentTarget.src = fallbackImage }}
-          alt={restaurant.name}
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+        <RestaurantPhoto
+          restaurant={restaurant}
+          className="transition duration-500 group-hover:scale-105"
         />
 
         <FavoriteButton restaurant={restaurant} />

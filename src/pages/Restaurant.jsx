@@ -1,4 +1,4 @@
-import { safeImageUrl, fallbackImage } from '../services/images'
+import RestaurantPhoto from '../components/RestaurantPhoto'
 import FavoriteButton from '../components/FavoriteButton'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
@@ -138,11 +138,7 @@ export default function Restaurant() {
 
         <div className="relative h-[320px] overflow-hidden rounded-2xl md:h-[440px]">
 
-          <img
-            src={safeImageUrl(restaurant.image)} loading="lazy" referrerPolicy="no-referrer" onError={event => { event.currentTarget.onerror = null; event.currentTarget.src = fallbackImage }}
-            alt={restaurant.name}
-            className="h-full w-full object-cover"
-          />
+          <RestaurantPhoto restaurant={restaurant} />
 
         <FavoriteButton restaurant={restaurant} />
 

@@ -36,3 +36,16 @@ it('recusa geocoder de outra cidade ou estado sem fazer busca por proximidade', 
   await expect(geoapifyProvider('mock', fetcher)('São Paulo', 'SP')).rejects.toThrow('confirmar')
   expect(fetcher).toHaveBeenCalledTimes(1)
 })
+
+it('imagem é associada ao local correto e não cria foto fictícia', async () => {
+  const features = [
+    { properties: { name: 'Com foto', place_id: 'foto', wiki_and_media: { image: 'https://example.org/local.jpg' } }, geometry: { type: 'Point', coordinates: [-46.1, -23.1] } },
+    { properties: { name: 'Sem foto', place_id: 'sem-foto' }, geometry: { type: 'Point', coordinates: [-46.2, -23.2] } },
+  ]
+  const fetcher = vi.fn()
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ features: [{ properties: { country_code: 'br', result_type: 'city', city: 'São Paulo', state: 'São Paulo', place_id: 'municipio' } }] }) })
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ features }) })
+  const results = await geoapifyProvider('mock', fetcher)('São Paulo', 'SP')
+  expect(results[0].image).toBe('https://example.org/local.jpg')
+  expect(results[1].image).toBeNull()
+})
