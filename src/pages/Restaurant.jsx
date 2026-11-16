@@ -1,4 +1,3 @@
-import RestaurantPhoto from '../components/RestaurantPhoto'
 import FavoriteButton from '../components/FavoriteButton'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
@@ -7,6 +6,7 @@ import { ArrowLeft, MapPin } from 'lucide-react'
 import RestaurantMap from '../components/RestaurantMap'
 import RestaurantReviews from '../components/RestaurantReviews'
 import { getRestaurants } from '../services/restaurants'
+import { getRestaurantDescription } from '../services/restaurantDescription'
 
 export default function Restaurant() {
   const { id } = useParams()
@@ -136,15 +136,8 @@ export default function Restaurant() {
 
       <main className="mx-auto max-w-[1200px] px-4 py-8 lg:px-6">
 
-        <div className="relative h-[320px] overflow-hidden rounded-2xl md:h-[440px]">
-
-          <RestaurantPhoto restaurant={restaurant} />
-
-        <FavoriteButton restaurant={restaurant} />
-
-        </div>
-
-        <section className="py-8">
+        <section className="relative py-8 pr-16">
+          <FavoriteButton restaurant={restaurant} />
 
           <div className="flex flex-col justify-between gap-5 md:flex-row">
 
@@ -182,8 +175,11 @@ export default function Restaurant() {
             </h2>
 
             <p className="mt-4 leading-7 text-[#6d6a61]">
-              As informações disponíveis sobre este estabelecimento são obtidas pela busca de restaurantes.
-              Antes de visitar, confirme endereço, horários e serviços diretamente com o local.
+              {getRestaurantDescription(restaurant)}
+            </p>
+            <p className="mt-4 text-sm leading-6 text-[#6d6a61]">
+              As informações são baseadas nos dados cadastrados para este estabelecimento.
+              Antes de visitar, confirme horários, cardápio e serviços diretamente com o local.
             </p>
 
           </section>
