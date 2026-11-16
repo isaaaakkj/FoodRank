@@ -1,9 +1,10 @@
 import { supabase } from './supabase'
+import { isBannerColor } from '../data/bannerColors'
 
 export async function getMyProfile(userId) {
   if (!supabase || !userId) return null
   const { data, error } = await supabase.from('profiles')
-    .select('id,username,display_name,avatar_url,bio')
+    .select('id,username,display_name,avatar_url,bio,banner_color')
     .eq('id', userId).single()
   if (error) throw new Error('Não foi possível carregar o perfil. Verifique a migração do banco.')
   return data
@@ -21,6 +22,12 @@ export async function saveMyProfile(userId, values) {
     throw new Error('Confira o nome (2 a 80 caracteres) e a biografia (até 300).')
   }
   const update = { username, display_name: displayName, bio }
+  if (values.banner_color !== undefined) {
+    if (!isBannerColor(values.banner_color)) {
+      throw new Error('Escolha uma das cores disponíveis para a capa.')
+    }
+    update.banner_color = values.banner_color
+  }
   if (values.avatar_url !== undefined) {
     if (values.avatar_url !== null && (
       typeof values.avatar_url !== 'string' ||
@@ -32,7 +39,7 @@ export async function saveMyProfile(userId, values) {
   const { data, error } = await supabase.from('profiles')
     .update(update)
     .eq('id', userId)
-    .select('id,username,display_name,avatar_url,bio')
+    .select('id,username,display_name,avatar_url,bio,banner_color')
     .single()
   if (error?.code === '23505') throw new Error('Este @usuário já está em uso. Escolha outro.')
   if (error?.code === '23514') throw new Error('O @usuário precisa ter no máximo 15 caracteres.')
