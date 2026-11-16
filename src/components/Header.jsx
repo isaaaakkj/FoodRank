@@ -37,9 +37,14 @@ export default function Header() {
 
         {/* Logo */}
         <div className="flex min-w-fit items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#28351f] text-[#28351f]">
-            <span className="text-2xl">✦</span>
-          </div>
+          <img
+            src={`${import.meta.env.BASE_URL}foodrank-favicon.png`}
+            alt=""
+            aria-hidden="true"
+            width="48"
+            height="48"
+            className="h-12 w-12 shrink-0 rounded-full object-contain"
+          />
 
           <div>
             <h1 className="font-display text-2xl font-bold leading-none text-[#28351f]">
