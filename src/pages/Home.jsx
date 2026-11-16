@@ -36,6 +36,7 @@ export default function Home() {
       <Header
         search={search}
         onSearchChange={setSearch}
+        searchEnabled={hasSearchedLocation}
       />
 
       <main id="main-content" tabIndex={-1} className="px-4 pb-16 lg:px-6">
