@@ -14,7 +14,8 @@ function renderHome() {
   return render(<MemoryRouter><Routes><Route path="/" element={<Home />} /><Route path="/restaurant/:id" element={<p>Detalhes abertos</p>} /></Routes></MemoryRouter>)
 }
 async function selectCity(user) {
-  await user.selectOptions(screen.getByLabelText('Estado'), 'São Paulo')
+  await user.click(screen.getByRole('button', { name: 'Estado' }))
+  await user.click(screen.getByRole('option', { name: 'São Paulo' }))
   await user.type(screen.getByLabelText('Cidade'), 'São Paulo')
   await user.click(screen.getByRole('button', { name: 'Buscar', exact: true }))
 }
@@ -40,7 +41,7 @@ it('apresenta carregamento, erro e nova tentativa', async () => {
   getRestaurants.mockImplementationOnce(() => new Promise((_, fail) => { reject = fail }))
   const user = userEvent.setup()
   renderHome()
-  await user.type(screen.getByRole('searchbox'), 'cafe')
+  expect(screen.getByRole('searchbox', { name: 'Pesquisar restaurantes' })).toBeDisabled()
   await selectCity(user)
   expect(screen.getByText('Procurando restaurantes...')).toBeVisible()
   expect(screen.queryByText(/Encontramos 0 restaurantes/)).not.toBeInTheDocument()
