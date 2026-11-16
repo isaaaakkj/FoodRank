@@ -42,7 +42,7 @@ begin
   on conflict (id) do nothing;
   return new;
 end;
-$;
+$$;
 
 -- Trigger interno: não disponibilizar a função SECURITY DEFINER pela API.
 revoke all on function public.initialize_foodrank_profile() from public, anon, authenticated;
