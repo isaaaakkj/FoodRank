@@ -21,6 +21,7 @@ export default function Home() {
 
   function handleLocationSearch(newLocation) {
     setLocation(newLocation)
+    setSearch('')
     setHasSearchedLocation(true)
   }
 
@@ -33,14 +34,16 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#f7f3eb]">
-      <Header
-        search={search}
-        onSearchChange={setSearch}
-        searchEnabled={hasSearchedLocation}
-      />
+      <Header />
 
       <main id="main-content" tabIndex={-1} className="px-4 pb-16 lg:px-6">
-        <Hero onLocationSearch={handleLocationSearch} onLocationChange={() => setHasSearchedLocation(false)} />
+        <Hero
+          onLocationSearch={handleLocationSearch}
+          onLocationChange={() => { setHasSearchedLocation(false); setSearch('') }}
+          search={search}
+          onSearchChange={setSearch}
+          searchEnabled={hasSearchedLocation}
+        />
 
         <CategoryList
           selectedCategory={selectedCategory}
