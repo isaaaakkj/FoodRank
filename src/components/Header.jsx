@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { UserRound } from 'lucide-react'
+import ThemeToggle from './ThemeToggle'
 
 export default function Header() {
   const { user } = useAuth()
@@ -41,7 +42,8 @@ export default function Header() {
         </nav>
 
         {/* Ações */}
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
           <Link to="/profile" title={user ? 'Meu perfil' : 'Entrar com Google'} aria-label={user ? 'Meu perfil' : 'Entrar com Google'}
             className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-[#d8cbb7] bg-[#e8dfcf]">
             {avatarValid ? <img src={avatar} referrerPolicy="no-referrer" alt="" className="h-full w-full object-cover" /> : <UserRound size={20} className="text-[#604936]" />}
