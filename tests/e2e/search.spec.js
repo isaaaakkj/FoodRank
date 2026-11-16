@@ -16,11 +16,14 @@ test('busca no celular, filtros, escolha de filial e detalhes sem serviços exte
     ] }`,
   }))
   await page.goto('./')
+  const restaurantFilter = page.getByRole('searchbox', { name: 'Pesquisar restaurantes' })
+  await expect(restaurantFilter).toBeDisabled()
   await page.getByLabel('Estado', { exact: true }).selectOption('São Paulo')
   await page.getByLabel('Cidade', { exact: true }).fill('São Paulo')
   await page.getByRole('button', { name: 'Buscar', exact: true }).click()
 
-  await page.getByRole('searchbox', { name: /Filtrar restaurantes/i }).fill('CAFE SAO')
+  await expect(restaurantFilter).toBeEnabled()
+  await restaurantFilter.fill('CAFE SAO')
   await expect(page.getByRole('heading', { name: 'Café São João' }).first()).toBeVisible()
 
   const restaurantSearch = page.getByRole('combobox', { name: 'Restaurante e unidade' })
