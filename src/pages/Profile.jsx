@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowLeft, LogOut, Save, Star, UserRound } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { useAuth } from '../auth/AuthContext'
+import { useAuth } from '../auth/useAuth'
 import { getMyProfile, getMyReviewHistory, saveMyProfile } from '../services/profiles'
 
 export default function Profile() {
