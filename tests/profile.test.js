@@ -1,9 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const updateResult = { id: 'a', username: 'joao', display_name: 'João', bio: 'Gosto de café' }
-const single = vi.fn()
-const update = vi.fn(() => ({ eq: () => ({ select: () => ({ single }) }) }))
-const from = vi.fn(() => ({ update }))
+const { single, update, from } = vi.hoisted(() => {
+  const single = vi.fn()
+  const update = vi.fn(() => ({ eq: () => ({ select: () => ({ single }) }) }))
+  const from = vi.fn(() => ({ update }))
+  return { single, update, from }
+})
 vi.mock('../src/services/supabase', () => ({ supabase: { from } }))
 import { saveMyProfile } from '../src/services/profiles'
 
