@@ -36,10 +36,10 @@ export default function ReviewForm({ location, enabled = false }) {
       .catch(() => { if (active) setAuthorProfile(null) })
     return () => { active = false }
   }, [user?.id])
-  const publicName = authorProfile?.id === user?.id
+  const publicName = user?.id && authorProfile?.id === user.id
     ? authorProfile.display_name
     : user?.user_metadata?.full_name || user?.user_metadata?.name || 'Seu perfil'
-  const publicAvatar = authorProfile?.id === user?.id
+  const publicAvatar = user?.id && authorProfile?.id === user.id
     ? authorProfile.avatar_url
     : user?.user_metadata?.avatar_url
   const avatarValid = typeof publicAvatar === 'string' && publicAvatar.startsWith('https://')
