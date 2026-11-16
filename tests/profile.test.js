@@ -30,6 +30,13 @@ describe('edição de perfil', () => {
     expect(update).toHaveBeenCalledWith({ username: 'joao', display_name: 'João', bio: 'Gosto de café' })
   })
 
+  it('respeita o limite de 15 caracteres para o @usuário', async () => {
+    await expect(saveMyProfile('a', { username: 'abcdefghijklmnop', display_name: 'João', bio: '' }))
+      .rejects.toThrow(/15 caracteres/)
+    await expect(saveMyProfile('a', { username: 'abc', display_name: 'João', bio: '' }))
+      .resolves.toBeTruthy()
+  })
+
   it('informa conflito para usernames repetidos', async () => {
     single.mockResolvedValueOnce({ data: null, error: { code: '23505' } })
     await expect(saveMyProfile('a', { username: 'joao', display_name: 'João', bio: '' }))
