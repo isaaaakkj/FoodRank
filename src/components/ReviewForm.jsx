@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { MapPin, Search, Send, Star } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { useAuth } from '../auth/AuthContext'
+import { useAuth } from '../auth/useAuth'
 import useRestaurants from '../hooks/useRestaurants'
 import Turnstile from './Turnstile'
 import { isTurnstileConfigured } from '../services/turnstileConfig'
