@@ -52,3 +52,91 @@ p, h1, h2, h3 { overflow-wrap: anywhere; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
+
+/* Tema selecionado: cores próprias para a identidade rústica do FoodRank. */
+:root {
+  color-scheme: light;
+  --theme-page: #f7f3eb;
+  --theme-surface: #faf8f3;
+  --theme-surface-muted: #eee7d9;
+  --theme-heading: #28351f;
+  --theme-body: #20231d;
+  --theme-secondary: #6d6a61;
+  --theme-brown: #604936;
+  --theme-border: #ddd3c2;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --cream: #181c19;
+  --cream-dark: #262e27;
+  --olive: #d8e5cc;
+  --olive-light: #b4c8a5;
+  --brown: #dbc5ad;
+  --wine: #e8aaa4;
+  --gold: #d4b66f;
+  --text: #e8e9e3;
+  --text-light: #bfc8bb;
+  --border: #475045;
+  --theme-page: #181c19;
+  --theme-surface: #222923;
+  --theme-surface-muted: #303a30;
+  --theme-heading: #e3eadc;
+  --theme-body: #e8e9e3;
+  --theme-secondary: #bfc8bb;
+  --theme-brown: #dbc5ad;
+  --theme-border: #475045;
+}
+
+.theme-toggle {
+  color: var(--theme-heading);
+  background: var(--theme-surface);
+  border-color: var(--theme-border);
+}
+.theme-toggle:hover { background: var(--theme-surface-muted); }
+.theme-toggle:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+html[data-theme="dark"] body { background: var(--theme-page); color: var(--theme-body); }
+
+/* O projeto utiliza cores Tailwind literais; essas regras preservam as classes
+   existentes e trocam só a paleta das superfícies e conteúdo. */
+html[data-theme="dark"] [class~="bg-[#f7f3eb]"] { background-color: var(--theme-page); }
+html[data-theme="dark"] [class~="bg-[#faf8f3]"],
+html[data-theme="dark"] [class~="bg-white"] { background-color: var(--theme-surface); }
+html[data-theme="dark"] [class~="bg-[#eee7d9]"],
+html[data-theme="dark"] [class~="bg-[#e8dfcf]"] { background-color: var(--theme-surface-muted); }
+html[data-theme="dark"] [class~="bg-[#28351f]"]:not(.theme-preserve-dark) {
+  background-color: #41583c;
+}
+html[data-theme="dark"] [class~="text-[#28351f]"],
+html[data-theme="dark"] [class~="text-[#20231d]"] { color: var(--theme-heading); }
+html[data-theme="dark"] [class~="text-[#6d6a61]"],
+html[data-theme="dark"] [class~="text-[#777269]"] { color: var(--theme-secondary); }
+html[data-theme="dark"] [class~="text-[#604936]"],
+html[data-theme="dark"] [class~="text-[#463626]"],
+html[data-theme="dark"] [class~="text-[#6b3434]"] { color: var(--theme-brown); }
+html[data-theme="dark"] [class~="border-[#ddd3c2]"],
+html[data-theme="dark"] [class~="border-[#ded5c6]"],
+html[data-theme="dark"] [class~="border-[#d8cbb7]"],
+html[data-theme="dark"] [class~="border-[#cfc3b0]"] { border-color: var(--theme-border); }
+html[data-theme="dark"] [class~="border-[#ddd3c2]/70"] { border-color: rgb(71 80 69 / 70%); }
+html[data-theme="dark"] [class~="border-t"] { border-top-color: var(--theme-border); }
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select {
+  color: var(--theme-body);
+  caret-color: var(--theme-heading);
+}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder { color: #aab6a8; }
+
+/* Hero e botões com fundo dourado mantêm contraste com texto escuro. */
+html[data-theme="dark"] [class~="bg-[#d4b66f]"] { color: #28351f; }
+html[data-theme="dark"] [class~="bg-[#28351f]"] [class~="text-white"],
+html[data-theme="dark"] [class~="bg-[#28351f]"] [class~="text-[#f7f3eb]"] { color: #faf8f3; }
+html[data-theme="dark"] [class~="bg-[#28351f]"][class~="text-white"],
+html[data-theme="dark"] [class~="bg-[#28351f]"][class~="text-[#f7f3eb]"] { color: #faf8f3; }
+
+/* Componentes ainda com o tema claro explícito em campos do formulário. */
+html[data-theme="dark"] [class~="bg-transparent"] { background-color: transparent; }
+html[data-theme="dark"] .skip-link { color: var(--theme-heading); }
