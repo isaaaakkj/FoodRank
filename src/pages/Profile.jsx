@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeft, ArrowUpRight, CalendarDays, Coffee, LogOut, MapPin, Pencil, Star, UserRound, UtensilsCrossed } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, Coffee, LogOut, MapPin, Pencil, Star, UserRound, UtensilsCrossed } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { getMyProfile, getMyReviewHistory } from '../services/profiles'
+import { DEFAULT_BANNER_COLOR } from '../data/bannerColors'
 
 const dateFormat = value => {
   const date = new Date(value)
@@ -71,40 +72,35 @@ export default function Profile() {
         ) : profile ? (
           <div className="space-y-6">
             <section aria-label="Informações do perfil" className="overflow-hidden rounded-[26px] border border-[#e1d7c8] bg-[#fcfaf6] shadow-[0_12px_40px_rgba(40,53,31,.06)]">
-              <div className="relative h-24 overflow-hidden bg-[#28351f] sm:h-28">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_10%,rgba(212,182,111,.4),transparent_40%),linear-gradient(120deg,#172014,#28351f_55%,#604936)]" />
-                <div className="absolute -right-8 -top-20 h-56 w-56 rounded-full border border-[#d4b66f]/25" />
-                <div className="absolute bottom-3 right-5 text-[10px] font-bold uppercase tracking-[0.22em] text-[#e4c78a]">Meu espaço · FoodRank</div>
-              </div>
-
+              <div
+                className="profile-banner h-32 sm:h-36"
+                style={{ backgroundColor: profile.banner_color || DEFAULT_BANNER_COLOR }}
+                aria-label="Capa de cor personalizada do perfil"
+              />
               <div className="relative px-5 pb-5 sm:px-9 sm:pb-7">
-                <div className="absolute -top-12 left-1/2 flex h-24 w-24 -translate-x-1/2 items-center justify-center overflow-hidden rounded-full border-[5px] border-[#fcfaf6] bg-[#e8dfcf] text-[#604936] shadow-lg sm:left-9 sm:h-28 sm:w-28 sm:translate-x-0">
-                  {avatarValid ? <img src={avatarUrl} alt="Foto do perfil" referrerPolicy="no-referrer" className="h-full w-full object-cover" /> : <UserRound size={43} />}
-                </div>
-                <div className="flex flex-col items-center gap-4 pt-16 text-center sm:min-h-[104px] sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:pl-36 sm:pt-5 sm:text-left">
+                <div className="flex flex-col items-center gap-4 pt-5 text-center sm:flex-row sm:items-center sm:gap-7 sm:text-left">
+                  <div className="-mt-16 flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-full border-[5px] border-[#fcfaf6] bg-[#e8dfcf] text-[#604936] shadow-lg sm:-mt-14 sm:h-32 sm:w-32">
+                    {avatarValid ? <img src={avatarUrl} alt="Foto do perfil" referrerPolicy="no-referrer" className="h-full w-full object-cover" /> : <UserRound size={43}/>}
+                  </div>
                   <div className="min-w-0 flex-1">
                     <h1 className="break-words text-3xl font-semibold leading-tight text-[#28351f] sm:text-4xl" style={{ fontFamily: "'Fraunces', Georgia, serif" }}>{profile.display_name}</h1>
                     <p className="mt-1 break-all text-sm font-bold text-[#947447]">@{profile.username}</p>
+                    <p className="mt-2 max-w-2xl whitespace-pre-wrap break-words text-sm leading-6 text-[#604936]">
+                      {profile.bio || 'Adicione uma breve apresentação sobre você.'}
+                    </p>
                   </div>
-                  <Link to="/profile/edit" className="hidden shrink-0 items-center gap-2 rounded-full bg-[#28351f] px-5 py-2.5 text-sm font-bold text-[#faf8f3] transition hover:bg-[#4b5b3d] sm:inline-flex">
+                  <Link to="/profile/edit" className="inline-flex shrink-0 items-center gap-2 rounded-full bg-[#28351f] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#4b5b3d]">
                     <Pencil size={15}/> Editar perfil
                   </Link>
                 </div>
-
-                <p className="mx-auto mt-4 max-w-3xl whitespace-pre-wrap break-words text-center text-sm leading-6 text-[#604936] sm:mx-0 sm:text-left">
-                  {profile.bio || 'Explorando sabores e colecionando boas experiências. Adicione uma apresentação sobre você.'}
-                </p>
-
-                <div className="mt-5 flex flex-col items-center justify-between gap-4 border-t border-[#e7ddcf] pt-4 sm:flex-row">
-                  <div className="flex items-center gap-3 rounded-xl bg-[#eee7d9] px-4 py-2.5 text-[#28351f]">
-                    <CalendarDays size={19} className="text-[#947447]"/>
+                <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#e7ddcf] pt-4">
+                  <div className="flex items-center gap-3 text-[#28351f]">
                     <span className="text-xl font-bold">{approved.length}</span>
-                    <span className="text-xs font-semibold text-[#604936]">Avaliações publicadas</span>
+                    <span className="text-sm font-medium text-[#604936]">Avaliações publicadas</span>
                   </div>
-                  <div className="flex flex-wrap items-center justify-center gap-3">
-                    <Link to="/profile/edit" className="inline-flex items-center gap-2 rounded-full bg-[#28351f] px-5 py-2.5 text-xs font-bold text-white sm:hidden"><Pencil size={15}/> Editar perfil</Link>
-                    <Link to="/" className="inline-flex items-center gap-2 rounded-full border border-[#c9b99f] px-5 py-2.5 text-xs font-bold text-[#604936] hover:bg-[#eee7d9]">Explorar <ArrowUpRight size={15}/></Link>
-                    <button onClick={handleSignOut} className="inline-flex items-center gap-2 px-2 py-2 text-xs font-semibold text-[#777269] hover:text-[#6b3434]"><LogOut size={15}/> Sair</button>
+                  <div className="flex flex-wrap gap-4">
+                    <Link to="/" className="text-sm font-semibold text-[#604936] hover:underline">Explorar restaurantes</Link>
+                    <button onClick={handleSignOut} className="inline-flex items-center gap-1 text-sm font-semibold text-[#777269] hover:text-[#6b3434]"><LogOut size={15}/> Sair</button>
                   </div>
                 </div>
               </div>
@@ -119,9 +115,9 @@ export default function Profile() {
                 <span className="rounded-full bg-[#eee7d9] px-4 py-2 text-xs font-bold text-[#604936]">{approved.length} publicadas</span>
               </div>
 
-              {history.length ? (
+              {approved.length ? (
                 <div className="space-y-4 bg-[#f7f3eb] p-4 md:p-6">
-                  {history.map(review => (
+                  {approved.map(review => (
                     <article key={review.id} className="rounded-2xl border border-[#e1d7c8] bg-[#fcfaf6] px-5 py-5 shadow-sm md:px-7">
                       <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#e8dfcf] text-[#604936]">
@@ -132,7 +128,7 @@ export default function Profile() {
                           <p className="text-xs text-[#777269]">{dateFormat(review.created_at)}</p>
                         </div>
                         <span className="rounded-full bg-[#eee7d9] px-3 py-1.5 text-[11px] font-semibold text-[#604936]">
-                          {review.status === 'approved' ? 'Publicada' : review.status === 'pending' ? 'Em análise' : 'Não aprovada'}
+                          Publicada
                         </span>
                       </div>
                       <Link to={`/restaurant/${encodeURIComponent(review.restaurant_id)}?city=${encodeURIComponent(review.city)}&state=${encodeURIComponent(review.state)}`}
@@ -150,8 +146,8 @@ export default function Profile() {
               ) : (
                 <div className="px-6 py-12 text-center">
                   <UtensilsCrossed size={30} className="mx-auto text-[#a88b54]"/>
-                  <h3 className="mt-4 text-lg font-bold text-[#28351f]">Sua história começa com uma descoberta.</h3>
-                  <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#6d6a61]">Você ainda não enviou avaliações com esta conta. Comentários antigos sem login não são vinculados automaticamente.</p>
+                  <h3 className="mt-4 text-lg font-bold text-[#28351f]">Sua primeira avaliação começa com uma descoberta.</h3>
+                  <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#6d6a61]">Você ainda não publicou avaliações com esta conta. Encontre um restaurante e compartilhe sua experiência.</p>
                   <Link to="/" className="mt-5 inline-flex rounded-full bg-[#28351f] px-6 py-3 text-sm font-bold text-white">Encontrar restaurantes</Link>
                 </div>
               )}
