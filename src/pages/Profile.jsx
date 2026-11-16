@@ -41,7 +41,7 @@ export default function Profile() {
   const approved = history.filter(review => review.status === 'approved')
 
   return (
-    <main id="main-content" tabIndex={-1} className="min-h-screen bg-[#f7f3eb] px-4 py-7 text-[#28351f] md:px-8 md:py-10" style={{ fontFamily: "'Manrope', sans-serif" }}>
+    <main id="main-content" tabIndex={-1} className="foodrank-profile min-h-screen bg-[#f7f3eb] px-4 py-7 text-[#28351f] md:px-8 md:py-10" style={{ fontFamily: "'Manrope', sans-serif" }}>
       <div className="mx-auto max-w-[1250px]">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-[#604936] hover:text-[#28351f]">
@@ -78,19 +78,17 @@ export default function Profile() {
               </div>
 
               <div className="relative px-5 pb-5 sm:px-9 sm:pb-7">
-                <div className="-mt-11 flex flex-col items-center gap-3 sm:-mt-12 sm:flex-row sm:items-end sm:gap-6">
-                  <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-[5px] border-[#fcfaf6] bg-[#e8dfcf] text-[#604936] shadow-lg sm:h-28 sm:w-28">
-                    {avatarValid ? <img src={avatarUrl} alt="Foto do perfil" referrerPolicy="no-referrer" className="h-full w-full object-cover" /> : <UserRound size={43} />}
-                  </div>
-                  <div className="min-w-0 flex-1 text-center sm:pb-1 sm:text-left">
+                <div className="absolute -top-12 left-1/2 flex h-24 w-24 -translate-x-1/2 items-center justify-center overflow-hidden rounded-full border-[5px] border-[#fcfaf6] bg-[#e8dfcf] text-[#604936] shadow-lg sm:left-9 sm:h-28 sm:w-28 sm:translate-x-0">
+                  {avatarValid ? <img src={avatarUrl} alt="Foto do perfil" referrerPolicy="no-referrer" className="h-full w-full object-cover" /> : <UserRound size={43} />}
+                </div>
+                <div className="flex flex-col items-center gap-4 pt-16 text-center sm:min-h-[104px] sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:pl-36 sm:pt-5 sm:text-left">
+                  <div className="min-w-0 flex-1">
                     <h1 className="break-words text-3xl font-semibold leading-tight text-[#28351f] sm:text-4xl" style={{ fontFamily: "'Fraunces', Georgia, serif" }}>{profile.display_name}</h1>
                     <p className="mt-1 break-all text-sm font-bold text-[#947447]">@{profile.username}</p>
                   </div>
-                  <div className="hidden sm:flex sm:pb-1">
-                    <Link to="/profile/edit" className="inline-flex items-center gap-2 rounded-full bg-[#28351f] px-5 py-2.5 text-sm font-bold text-[#faf8f3] transition hover:bg-[#4b5b3d]">
-                      <Pencil size={15}/> Editar perfil
-                    </Link>
-                  </div>
+                  <Link to="/profile/edit" className="hidden shrink-0 items-center gap-2 rounded-full bg-[#28351f] px-5 py-2.5 text-sm font-bold text-[#faf8f3] transition hover:bg-[#4b5b3d] sm:inline-flex">
+                    <Pencil size={15}/> Editar perfil
+                  </Link>
                 </div>
 
                 <p className="mx-auto mt-4 max-w-3xl whitespace-pre-wrap break-words text-center text-sm leading-6 text-[#604936] sm:mx-0 sm:text-left">
