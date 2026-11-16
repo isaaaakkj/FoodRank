@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import RestaurantCard from './RestaurantCard'
 import useRestaurants from '../hooks/useRestaurants'
 import { filterRestaurants } from '../services/filters'
+import { formatCityName } from '../utils/formatCityName'
 
 export default function FeaturedRestaurants({ filters }) {
   const { restaurants, loading, error, retry } = useRestaurants(
@@ -39,7 +40,7 @@ export default function FeaturedRestaurants({ filters }) {
           <h2 className="mt-1 font-display text-3xl font-semibold text-[#28351f]">
             {!filters.hasSearchedLocation ? 'Explore restaurantes' : filters.search
               ? 'Resultados da busca'
-              : `Restaurantes em ${filters.location.city}`}
+              : `Restaurantes em ${formatCityName(filters.location.city)}`}
           </h2>
 
           <p className="mt-2 text-sm text-[#6d6a61]">
@@ -51,7 +52,7 @@ export default function FeaturedRestaurants({ filters }) {
               ? `Encontramos ${filteredRestaurants.length} restaurante${
                   filteredRestaurants.length === 1 ? '' : 's'
                 } para sua busca.`
-              : `Explore restaurantes encontrados em ${filters.location.city}, ${filters.location.state}.`}
+              : `Explore restaurantes encontrados em ${formatCityName(filters.location.city)}, ${filters.location.state}.`}
           </p>
         </div>
 
