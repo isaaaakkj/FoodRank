@@ -5,11 +5,13 @@ import Favorites from '../pages/Favorites'
 import Timeline from '../pages/Timeline'
 import Home from '../pages/Home'
 import Restaurant from '../pages/Restaurant'
+import Profile from '../pages/Profile'
 
 export default function AppRoutes() {
   return (
     <HashRouter>
       <Routes>
+        <Route path="/profile" element={<Profile />} />
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/timeline" element={<Timeline />} />
         <Route path="*" element={<NotFound />} />
