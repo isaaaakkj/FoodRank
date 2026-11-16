@@ -12,6 +12,22 @@ function RoutedPages() {
   const { pathname } = useLocation()
   return (
     <>
+      <Routes>
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/favorites" element={<Favorites />} />
+        <Route path="/timeline" element={<Timeline />} />
+        <Route path="*" element={<NotFound />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/restaurant/:id" element={<Restaurant />} />
+      </Routes>
+      {pathname !== '/' && <ThemeToggle floating />}
+    </>
+  )
+}
+
+export default function AppRoutes() {
+  return (
+    <HashRouter>
       <RoutedPages />
     </HashRouter>
   )
