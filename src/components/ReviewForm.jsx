@@ -25,7 +25,7 @@ function restaurantKey(item) {
   return [item.id, item.latitude ?? '', item.longitude ?? ''].join('|')
 }
 
-export default function ReviewForm({ location, enabled = false }) {
+export default function ReviewForm({ location, enabled = false, fixedRestaurant = null, onSubmitted }) {
   const { user } = useAuth()
   const [authorProfile, setAuthorProfile] = useState(null)
   useEffect(() => {
@@ -55,7 +55,7 @@ export default function ReviewForm({ location, enabled = false }) {
   const [submitting, setSubmitting] = useState(false)
   const [widgetVersion, setWidgetVersion] = useState(0)
 
-  const selected = restaurants.find((item) => restaurantKey(item) === selectedKey)
+  const selected = fixedRestaurant || restaurants.find((item) => restaurantKey(item) === selectedKey)
 
   const suggestions = useMemo(() => {
     const term = normalizeText(search)
@@ -145,11 +145,14 @@ export default function ReviewForm({ location, enabled = false }) {
       }, token)
 
       setNotice(response.message || 'Avaliação publicada com sucesso.')
-      setSearch('')
-      setSelectedKey('')
+      if (!fixedRestaurant) {
+        setSearch('')
+        setSelectedKey('')
+      }
       setSuggestionsOpen(false)
       setRating(0)
       setComment('')
+      onSubmitted?.()
     } catch (err) {
       setNotice(err.message || 'Não foi possível enviar a avaliação.')
     } finally {
@@ -200,6 +203,22 @@ export default function ReviewForm({ location, enabled = false }) {
           )}
 
           <div className="grid items-stretch gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
+          {fixedRestaurant ? (
+            <div className="min-w-0 rounded-2xl border border-[#e2d7c6] bg-[#f6f0e7] p-4 sm:p-5">
+              <p className="mb-3 flex items-center gap-2 text-sm font-bold text-[#28351f]">
+                <Store size={19} className="text-[#8d7041]" aria-hidden="true" />
+                Restaurante selecionado
+              </p>
+              <div className="rounded-xl border border-[#c8bca5] bg-[#faf8f3] p-4">
+                <p className="font-display text-lg font-semibold text-[#28351f]">{fixedRestaurant.name}</p>
+                <p className="mt-2 flex items-start gap-2 text-sm text-[#604936]">
+                  <MapPin size={16} className="mt-0.5 shrink-0" aria-hidden="true" />
+                  {restaurantAddress(fixedRestaurant, location?.city, location?.state)}
+                </p>
+              </div>
+              <p className="mt-3 text-xs text-[#6d6a61]">A avaliação será vinculada a esta unidade.</p>
+            </div>
+          ) : (
           <div className="min-w-0 rounded-2xl border border-[#e2d7c6] bg-[#f6f0e7] p-4 sm:p-5">
             <label htmlFor="review-restaurant" className="mb-3 flex items-center gap-2 text-sm font-bold text-[#28351f]">
               <Store size={19} className="text-[#8d7041]" aria-hidden="true" />
@@ -288,6 +307,8 @@ export default function ReviewForm({ location, enabled = false }) {
             )}
           </div>
 
+          )}
+
           <div className="min-w-0 rounded-2xl border border-[#e2d7c6] bg-[#f6f0e7] p-4 sm:p-5">
             <p id="rating-label" className="mb-3 flex items-center gap-2 text-sm font-bold text-[#28351f]">
               <Star size={19} className="text-[#8d7041]" aria-hidden="true" />
@@ -337,7 +358,7 @@ export default function ReviewForm({ location, enabled = false }) {
           <div className="flex flex-wrap items-center justify-end gap-3 border-t border-[#e2d7c6] pt-6">
             <button
               type="button"
-              onClick={() => { setSearch(''); setSelectedKey(''); setRating(0); setComment(''); setNotice('') }}
+              onClick={() => { if (!fixedRestaurant) { setSearch(''); setSelectedKey('') } setRating(0); setComment(''); setNotice('') }}
               disabled={submitting}
               className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-[#cfc0a6] px-6 text-sm font-bold text-[#604936] transition hover:bg-[#eee7d9] disabled:opacity-50"
             >
