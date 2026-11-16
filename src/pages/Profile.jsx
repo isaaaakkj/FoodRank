@@ -69,115 +69,95 @@ export default function Profile() {
             </div>
           </section>
         ) : profile ? (
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.75fr)_minmax(270px,.8fr)] lg:items-start">
-            <div className="min-w-0 overflow-hidden rounded-[28px] border border-[#e1d7c8] bg-[#fcfaf6] shadow-[0_14px_45px_rgba(40,53,31,.07)]">
-              <section aria-label="Apresentação do perfil">
-                <div className="relative h-44 overflow-hidden bg-[#28351f] sm:h-52 md:h-60">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_25%,rgba(212,182,111,.35),transparent_33%),linear-gradient(120deg,#172014,#28351f_52%,#594630)]" />
-                  <div className="absolute -right-16 -top-24 h-72 w-72 rounded-full border border-[#d4b66f]/20" />
-                  <div className="absolute -right-4 -top-10 h-56 w-56 rounded-full border border-[#d4b66f]/20" />
-                  <div className="absolute bottom-5 left-6 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.23em] text-[#e4c78a] md:left-9">
-                    <UtensilsCrossed size={17} /> Meu espaço
-                  </div>
-                </div>
+          <div className="space-y-6">
+            <section aria-label="Informações do perfil" className="overflow-hidden rounded-[26px] border border-[#e1d7c8] bg-[#fcfaf6] shadow-[0_12px_40px_rgba(40,53,31,.06)]">
+              <div className="relative h-24 overflow-hidden bg-[#28351f] sm:h-28">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_10%,rgba(212,182,111,.4),transparent_40%),linear-gradient(120deg,#172014,#28351f_55%,#604936)]" />
+                <div className="absolute -right-8 -top-20 h-56 w-56 rounded-full border border-[#d4b66f]/25" />
+                <div className="absolute bottom-3 right-5 text-[10px] font-bold uppercase tracking-[0.22em] text-[#e4c78a]">Meu espaço · FoodRank</div>
+              </div>
 
-                <div className="relative px-5 pb-9 text-center sm:px-8">
-                  <div className="mx-auto -mt-[72px] flex h-36 w-36 items-center justify-center overflow-hidden rounded-full border-[6px] border-[#fcfaf6] bg-[#e8dfcf] text-[#604936] shadow-[0_10px_26px_rgba(0,0,0,.13)]">
-                    {avatarValid ? (
-                      <img src={avatarUrl} alt="Foto do perfil" referrerPolicy="no-referrer" className="h-full w-full object-cover" />
-                    ) : <UserRound size={58} />}
+              <div className="relative px-5 pb-5 sm:px-9 sm:pb-7">
+                <div className="-mt-11 flex flex-col items-center gap-3 sm:-mt-12 sm:flex-row sm:items-end sm:gap-6">
+                  <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-[5px] border-[#fcfaf6] bg-[#e8dfcf] text-[#604936] shadow-lg sm:h-28 sm:w-28">
+                    {avatarValid ? <img src={avatarUrl} alt="Foto do perfil" referrerPolicy="no-referrer" className="h-full w-full object-cover" /> : <UserRound size={43} />}
                   </div>
-                  <p className="mt-5 text-[10px] font-bold uppercase tracking-[0.24em] text-[#a88b54]">Explorador gastronômico</p>
-                  <h1 className="mx-auto mt-2 max-w-xl break-words text-4xl font-semibold leading-tight text-[#28351f] md:text-5xl" style={{ fontFamily: "'Fraunces', Georgia, serif" }}>
-                    {profile.display_name}
-                  </h1>
-                  <p className="mt-2 break-all text-sm font-bold text-[#947447]">@{profile.username}</p>
-                  <p className="mx-auto mt-4 max-w-lg whitespace-pre-wrap break-words text-sm leading-7 text-[#604936]">
-                    {profile.bio || 'Explorando sabores e colecionando boas experiências. Adicione uma apresentação sobre você.'}
-                  </p>
-                  <div className="mt-6 flex flex-wrap justify-center gap-3">
-                    <Link to="/profile/edit" className="inline-flex items-center gap-2 rounded-full bg-[#28351f] px-6 py-3 text-sm font-bold text-[#faf8f3] transition hover:bg-[#4b5b3d]">
-                      <Pencil size={16} /> Editar perfil
-                    </Link>
-                    <Link to="/" className="inline-flex items-center gap-2 rounded-full border border-[#c9b99f] px-6 py-3 text-sm font-bold text-[#604936] transition hover:bg-[#eee7d9]">
-                      Descobrir restaurantes <ArrowUpRight size={16} />
+                  <div className="min-w-0 flex-1 text-center sm:pb-1 sm:text-left">
+                    <h1 className="break-words text-3xl font-semibold leading-tight text-[#28351f] sm:text-4xl" style={{ fontFamily: "'Fraunces', Georgia, serif" }}>{profile.display_name}</h1>
+                    <p className="mt-1 break-all text-sm font-bold text-[#947447]">@{profile.username}</p>
+                  </div>
+                  <div className="hidden sm:flex sm:pb-1">
+                    <Link to="/profile/edit" className="inline-flex items-center gap-2 rounded-full bg-[#28351f] px-5 py-2.5 text-sm font-bold text-[#faf8f3] transition hover:bg-[#4b5b3d]">
+                      <Pencil size={15}/> Editar perfil
                     </Link>
                   </div>
                 </div>
-              </section>
 
-              <section aria-label="Avaliações do usuário" className="border-t border-[#e4dacb]">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e4dacb] px-6 py-5 md:px-9">
-                  <div className="flex items-center gap-3 text-[#28351f]">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#eee7d9] text-[#947447]"><Coffee size={19}/></span>
-                    <h2 className="text-lg font-bold">Minhas avaliações</h2>
+                <p className="mx-auto mt-4 max-w-3xl whitespace-pre-wrap break-words text-center text-sm leading-6 text-[#604936] sm:mx-0 sm:text-left">
+                  {profile.bio || 'Explorando sabores e colecionando boas experiências. Adicione uma apresentação sobre você.'}
+                </p>
+
+                <div className="mt-5 flex flex-col items-center justify-between gap-4 border-t border-[#e7ddcf] pt-4 sm:flex-row">
+                  <div className="flex items-center gap-3 rounded-xl bg-[#eee7d9] px-4 py-2.5 text-[#28351f]">
+                    <CalendarDays size={19} className="text-[#947447]"/>
+                    <span className="text-xl font-bold">{approved.length}</span>
+                    <span className="text-xs font-semibold text-[#604936]">Avaliações publicadas</span>
                   </div>
-                  <span className="rounded-full bg-[#eee7d9] px-4 py-2 text-xs font-bold text-[#604936]">{approved.length} publicadas</span>
+                  <div className="flex flex-wrap items-center justify-center gap-3">
+                    <Link to="/profile/edit" className="inline-flex items-center gap-2 rounded-full bg-[#28351f] px-5 py-2.5 text-xs font-bold text-white sm:hidden"><Pencil size={15}/> Editar perfil</Link>
+                    <Link to="/" className="inline-flex items-center gap-2 rounded-full border border-[#c9b99f] px-5 py-2.5 text-xs font-bold text-[#604936] hover:bg-[#eee7d9]">Explorar <ArrowUpRight size={15}/></Link>
+                    <button onClick={handleSignOut} className="inline-flex items-center gap-2 px-2 py-2 text-xs font-semibold text-[#777269] hover:text-[#6b3434]"><LogOut size={15}/> Sair</button>
+                  </div>
                 </div>
+              </div>
+            </section>
 
-                {history.length ? (
-                  <div className="space-y-4 bg-[#f7f3eb] p-4 md:p-6">
-                    {history.map(review => (
-                      <article key={review.id} className="rounded-2xl border border-[#e1d7c8] bg-[#fcfaf6] px-5 py-5 shadow-sm md:px-7">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#e8dfcf] text-[#604936]">
-                            {avatarValid ? <img src={avatarUrl} alt="" referrerPolicy="no-referrer" className="h-full w-full object-cover" /> : <UserRound size={23} />}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-bold text-[#28351f]">@{profile.username}</p>
-                            <p className="text-xs text-[#777269]">{dateFormat(review.created_at)}</p>
-                          </div>
-                          <span className="rounded-full bg-[#eee7d9] px-3 py-1.5 text-[11px] font-semibold text-[#604936]">
-                            {review.status === 'approved' ? 'Publicada' : review.status === 'pending' ? 'Em análise' : 'Não aprovada'}
-                          </span>
-                        </div>
-
-                        <Link to={`/restaurant/${encodeURIComponent(review.restaurant_id)}?city=${encodeURIComponent(review.city)}&state=${encodeURIComponent(review.state)}`}
-                          className="mt-5 inline-flex items-center gap-2 break-words text-xl font-semibold text-[#28351f] hover:underline">
-                          {review.restaurant_name} <ArrowUpRight size={16} />
-                        </Link>
-                        <p className="mt-2 flex items-center gap-1.5 text-xs text-[#777269]"><MapPin size={13}/>{review.city}, {review.state}</p>
-                        <div className="mt-4 flex items-center gap-1 text-[#a88b54]" aria-label={`Nota ${review.rating} de 5`}>
-                          {Array.from({ length: 5 }, (_, i) => <Star key={i} size={17} fill={i < Number(review.rating) ? 'currentColor' : 'none'} />)}
-                        </div>
-                        <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-7 text-[#463626]">{review.comment}</p>
-                        <div className="mt-6 border-t border-[#e9e0d3] pt-4 text-xs text-[#947447]">Experiência compartilhada no FoodRank</div>
-                      </article>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="px-6 py-14 text-center">
-                    <UtensilsCrossed size={32} className="mx-auto text-[#a88b54]" />
-                    <h3 className="mt-4 text-xl font-bold text-[#28351f]">Sua história começa com uma descoberta.</h3>
-                    <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-[#6d6a61]">Você ainda não enviou avaliações com esta conta. Comentários antigos sem login não são vinculados automaticamente.</p>
-                    <Link to="/" className="mt-5 inline-flex rounded-full bg-[#28351f] px-6 py-3 text-sm font-bold text-white">Encontrar restaurantes</Link>
-                  </div>
-                )}
-              </section>
-            </div>
-
-            <aside className="space-y-5 lg:sticky lg:top-6" aria-label="Informações do perfil">
-              <section className="rounded-[24px] border border-[#e1d7c8] bg-[#fcfaf6] p-6">
-                <p className="text-[11px] font-bold uppercase tracking-[0.19em] text-[#a88b54]">Em números</p>
-                <h2 className="mt-2 text-xl font-semibold text-[#28351f]">Seu diário de sabores</h2>
-                <div className="mt-6 flex items-center gap-4 rounded-2xl bg-[#eee7d9] p-5">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#fcfaf6] text-[#a88b54]"><CalendarDays size={23}/></span>
-                  <div><p className="text-3xl font-bold text-[#28351f]">{approved.length}</p><p className="text-xs font-semibold text-[#604936]">Avaliações publicadas</p></div>
+            <section aria-label="Avaliações do usuário" className="overflow-hidden rounded-[26px] border border-[#e1d7c8] bg-[#fcfaf6]">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e4dacb] px-6 py-5 md:px-9">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#eee7d9] text-[#947447]"><Coffee size={19}/></span>
+                  <h2 className="text-lg font-bold text-[#28351f]">Minhas avaliações</h2>
                 </div>
-                <p className="mt-4 text-xs leading-6 text-[#777269]">Aqui aparecem apenas as avaliações aprovadas. Você pode acompanhar as demais no seu histórico.</p>
-              </section>
+                <span className="rounded-full bg-[#eee7d9] px-4 py-2 text-xs font-bold text-[#604936]">{approved.length} publicadas</span>
+              </div>
 
-              <section className="rounded-[24px] border border-[#e1d7c8] bg-[#fcfaf6] p-6">
-                <h2 className="text-lg font-bold text-[#28351f]">Personalize seu espaço</h2>
-                <p className="mt-3 text-sm leading-7 text-[#6d6a61]">Atualize sua foto, o nome de usuário e a descrição quando quiser.</p>
-                <Link to="/profile/edit" className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-[#604936] hover:underline">
-                  Ir para edição <ArrowUpRight size={16}/>
-                </Link>
-                <button onClick={handleSignOut} className="mt-6 flex items-center gap-2 text-xs font-semibold text-[#777269] hover:text-[#6b3434]">
-                  <LogOut size={15}/> Sair da conta
-                </button>
-              </section>
-            </aside>
+              {history.length ? (
+                <div className="space-y-4 bg-[#f7f3eb] p-4 md:p-6">
+                  {history.map(review => (
+                    <article key={review.id} className="rounded-2xl border border-[#e1d7c8] bg-[#fcfaf6] px-5 py-5 shadow-sm md:px-7">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#e8dfcf] text-[#604936]">
+                          {avatarValid ? <img src={avatarUrl} alt="" referrerPolicy="no-referrer" className="h-full w-full object-cover" /> : <UserRound size={22}/>}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-bold text-[#28351f]">@{profile.username}</p>
+                          <p className="text-xs text-[#777269]">{dateFormat(review.created_at)}</p>
+                        </div>
+                        <span className="rounded-full bg-[#eee7d9] px-3 py-1.5 text-[11px] font-semibold text-[#604936]">
+                          {review.status === 'approved' ? 'Publicada' : review.status === 'pending' ? 'Em análise' : 'Não aprovada'}
+                        </span>
+                      </div>
+                      <Link to={`/restaurant/${encodeURIComponent(review.restaurant_id)}?city=${encodeURIComponent(review.city)}&state=${encodeURIComponent(review.state)}`}
+                        className="mt-4 inline-flex items-center gap-2 break-words text-xl font-semibold text-[#28351f] hover:underline">
+                        {review.restaurant_name} <ArrowUpRight size={16}/>
+                      </Link>
+                      <p className="mt-2 flex items-center gap-1.5 text-xs text-[#777269]"><MapPin size={13}/>{review.city}, {review.state}</p>
+                      <div className="mt-3 flex items-center gap-1 text-[#a88b54]" aria-label={`Nota ${review.rating} de 5`}>
+                        {Array.from({ length: 5 }, (_, i) => <Star key={i} size={17} fill={i < Number(review.rating) ? 'currentColor' : 'none'}/>)}
+                      </div>
+                      <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-7 text-[#463626]">{review.comment}</p>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <div className="px-6 py-12 text-center">
+                  <UtensilsCrossed size={30} className="mx-auto text-[#a88b54]"/>
+                  <h3 className="mt-4 text-lg font-bold text-[#28351f]">Sua história começa com uma descoberta.</h3>
+                  <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#6d6a61]">Você ainda não enviou avaliações com esta conta. Comentários antigos sem login não são vinculados automaticamente.</p>
+                  <Link to="/" className="mt-5 inline-flex rounded-full bg-[#28351f] px-6 py-3 text-sm font-bold text-white">Encontrar restaurantes</Link>
+                </div>
+              )}
+            </section>
           </div>
         ) : (
           <p role="status" className="rounded-3xl bg-[#fcfaf6] p-9">Não foi possível exibir o perfil.</p>
