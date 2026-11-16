@@ -40,9 +40,6 @@ export default function Profile() {
   const avatarUrl = profile?.avatar_url || fallbackAvatar
   const avatarValid = typeof avatarUrl === 'string' && avatarUrl.startsWith('https://')
   const approved = history.filter(review => review.status === 'approved')
-  const average = approved.length
-    ? (approved.reduce((sum, review) => sum + Number(review.rating || 0), 0) / approved.length).toFixed(1)
-    : '—'
 
   return (
     <main id="main-content" tabIndex={-1} className="min-h-screen bg-[#f7f3eb] px-4 py-8 text-[#28351f] md:px-8 md:py-12" style={{ fontFamily: "'Manrope', sans-serif" }}>
@@ -99,18 +96,16 @@ export default function Profile() {
               </div>
             </section>
 
-            <div className="mt-6 grid gap-4 sm:grid-cols-3">
-              {[
-                { label: 'Avaliações enviadas', value: history.length, Icon: UtensilsCrossed },
-                { label: 'Avaliações publicadas', value: approved.length, Icon: CalendarDays },
-                { label: 'Média das avaliações', value: average, Icon: Star },
-              ].map(({ label, value, Icon }) => (
-                <div key={label} className="rounded-3xl border border-[#e2d7c6] bg-[#fcfaf6] p-6">
-                  <Icon size={21} className="text-[#a88b54]" />
-                  <p className="mt-4 text-3xl font-semibold text-[#28351f]">{value}</p>
-                  <p className="mt-1 text-sm text-[#6d6a61]">{label}</p>
+            <div className="mt-6">
+              <div className="flex max-w-sm items-center gap-5 rounded-3xl border border-[#e2d7c6] bg-[#fcfaf6] p-6">
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#eee7d9] text-[#a88b54]">
+                  <CalendarDays size={26} />
+                </span>
+                <div>
+                  <p className="text-3xl font-semibold text-[#28351f]">{approved.length}</p>
+                  <p className="mt-1 text-sm text-[#6d6a61]">Avaliações publicadas</p>
                 </div>
-              ))}
+              </div>
             </div>
 
             <section className="mt-12 pb-12">
