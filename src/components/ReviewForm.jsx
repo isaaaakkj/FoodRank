@@ -1,11 +1,12 @@
-import { useMemo, useState } from 'react'
-import { MapPin, Search, Send, Star } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { MapPin, Search, Send, Star, UserRound } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import useRestaurants from '../hooks/useRestaurants'
 import Turnstile from './Turnstile'
 import { isTurnstileConfigured } from '../services/turnstileConfig'
 import { submitReview } from '../services/reviews'
+import { getMyProfile } from '../services/profiles'
 
 const normalizeText = (value) =>
   String(value ?? '')
@@ -26,6 +27,22 @@ function restaurantKey(item) {
 
 export default function ReviewForm({ location, enabled = false }) {
   const { user } = useAuth()
+  const [authorProfile, setAuthorProfile] = useState(null)
+  useEffect(() => {
+    if (!user?.id) return undefined
+    let active = true
+    getMyProfile(user.id)
+      .then(profile => { if (active) setAuthorProfile(profile) })
+      .catch(() => { if (active) setAuthorProfile(null) })
+    return () => { active = false }
+  }, [user?.id])
+  const publicName = user?.id && authorProfile?.id === user.id
+    ? authorProfile.display_name
+    : user?.user_metadata?.full_name || user?.user_metadata?.name || 'Seu perfil'
+  const publicAvatar = user?.id && authorProfile?.id === user.id
+    ? authorProfile.avatar_url
+    : user?.user_metadata?.avatar_url
+  const avatarValid = typeof publicAvatar === 'string' && publicAvatar.startsWith('https://')
   const { restaurants, loading, error } = useRestaurants(location?.city, location?.state, enabled)
   const [notice, setNotice] = useState('')
   const [search, setSearch] = useState('')
@@ -162,9 +179,17 @@ export default function ReviewForm({ location, enabled = false }) {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {user ? (
-            <p className="rounded-xl border border-[#d8cbb7] bg-[#faf8f3] px-4 py-3 text-sm text-[#604936]">
-              Avaliação vinculada à sua conta Google. Seu nome público será obtido do perfil.
-            </p>
+            <div className="flex items-center gap-3 rounded-xl border border-[#d8cbb7] bg-[#faf8f3] px-4 py-3">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#e8dfcf] text-[#604936]">
+                {avatarValid ? (
+                  <img src={publicAvatar} alt="" referrerPolicy="no-referrer" className="h-full w-full object-cover" />
+                ) : <UserRound size={24} aria-hidden="true" />}
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs text-[#777269]">Avaliando como</p>
+                <p className="truncate font-semibold text-[#28351f]">{publicName}</p>
+              </div>
+            </div>
           ) : (
             <p className="rounded-xl border border-[#d8cbb7] bg-[#faf8f3] px-4 py-3 text-sm text-[#604936]">
               Para publicar avaliações e acompanhar o histórico, <Link to="/profile" className="font-semibold underline">entre com sua conta Google</Link>.
