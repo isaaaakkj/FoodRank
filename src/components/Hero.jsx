@@ -31,7 +31,7 @@ const states = [
   { uf: 'TO', name: 'Tocantins' },
 ]
 
-export default function Hero({ onLocationSearch, onLocationChange }) {
+export default function Hero({ onLocationSearch, onLocationChange, search, onSearchChange, searchEnabled }) {
   const [selectedState, setSelectedState] = useState('')
   const [city, setCity] = useState('')
 
@@ -156,6 +156,24 @@ export default function Hero({ onLocationSearch, onLocationChange }) {
           </button>
 
         </form>
+
+        <div className="mt-4">
+          <label htmlFor="restaurant-search" className="mb-2 block text-sm font-medium text-[#faf7ef]">
+            Pesquisar restaurantes
+          </label>
+          <div className={`flex h-14 items-center gap-3 rounded-xl border border-[#d8cbb7] bg-[#faf8f3] px-5 transition ${searchEnabled ? 'focus-within:border-[#d4b66f]' : 'opacity-70'}`}>
+            <Search size={20} className="shrink-0 text-[#604936]" />
+            <input
+              id="restaurant-search"
+              type="search"
+              disabled={!searchEnabled}
+              value={search}
+              onChange={(event) => onSearchChange(event.target.value)}
+              placeholder={searchEnabled ? 'Pesquise por restaurante, culinária ou localização' : 'Escolha o estado e a cidade e clique em Buscar'}
+              className="w-full bg-transparent text-sm text-[#20231d] outline-none placeholder:text-[#777269] disabled:cursor-not-allowed"
+            />
+          </div>
+        </div>
 
       </div>
 
