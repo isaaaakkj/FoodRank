@@ -13,7 +13,7 @@ export const categoryPhotos = {
   bakery: 'photo-1509440159596-0249088772ff',
   seafood: 'photo-1559742811-822873691df8',
   fastfood: 'photo-1513639776629-7b61b0ac49cb',
-  mexican: 'photo-1565299585323-38174c4a6471',
+  mexican: 'photo-1687881063470-a78e6ea2590e',
   chinese: 'photo-1526318896980-cf78c088247c',
   french: 'photo-1550966871-3ed3cdb5ed0c',
   italian: 'photo-1473093295043-cdd812d0e601',
