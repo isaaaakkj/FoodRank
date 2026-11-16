@@ -72,7 +72,7 @@ Deno.serve(async (request) => {
       auth: { persistSession: false, autoRefreshToken: false },
     })
     // Nunca aceitar user_id ou author_name do corpo: a identidade vem do JWT validado.
-    const bearer = request.headers.get('authorization')?.match(/^Bearer\\s+(.+)$/i)?.[1]
+    const bearer = request.headers.get('authorization')?.match(/^Bearer\s+(.+)$/i)?.[1]
     if (!bearer) return json({ error: 'Faça login com Google para avaliar.' }, 401, origin)
     const { data: identity, error: identityError } = await supabase.auth.getUser(bearer)
     if (identityError || !identity.user?.id || identity.user.is_anonymous) {
