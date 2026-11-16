@@ -6,6 +6,7 @@ import Home from '../src/pages/Home'
 import { getRestaurants } from '../src/services/restaurants'
 
 vi.mock('../src/services/restaurants', () => ({ getRestaurants: vi.fn() }))
+vi.mock('../src/auth/useAuth', () => ({ useAuth: () => ({ user: null }) }))
 vi.mock('../src/services/reviews', () => ({ getApprovedReviews: vi.fn().mockResolvedValue([]) }))
 // The restaurant-search tests isolate the independent review submission flow.
 vi.mock('../src/components/ReviewForm', () => ({ default: () => null }))
