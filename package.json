@@ -12,7 +12,10 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "verify:backend": "node scripts/verify-backend.mjs",
-    "verify:staging": "node scripts/verify-staging.mjs"
+    "verify:staging": "node scripts/verify-staging.mjs",
+    "predev": "node scripts/prepare-category-images.mjs",
+    "prebuild": "node scripts/prepare-category-images.mjs",
+    "images:prepare": "node scripts/prepare-category-images.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",
