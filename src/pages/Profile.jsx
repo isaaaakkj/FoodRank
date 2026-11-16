@@ -13,14 +13,12 @@ export default function Profile() {
   const { user, loading: authLoading, available, error: authError, signIn, signOut } = useAuth()
   const [profile, setProfile] = useState(null)
   const [history, setHistory] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    if (!user) { setProfile(null); setHistory([]); return undefined }
+    if (!user) return undefined
     let active = true
-    setLoading(true)
-    setError('')
     Promise.all([getMyProfile(user.id), getMyReviewHistory(user.id)])
       .then(([data, reviews]) => {
         if (active) { setProfile(data); setHistory(reviews) }
