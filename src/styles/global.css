@@ -151,3 +151,50 @@ html[data-theme="dark"] .skip-link { color: var(--theme-heading); }
   border-color: #a88b54;
   box-shadow: 0 2px 0 #a88b54, 0 4px 12px rgba(168, 139, 84, 0.12);
 }
+
+/* Superfícies e contraste do perfil em modo escuro. O fundo da capa continua
+   independente do tema, enquanto conteúdo e cartões seguem a paleta ativa. */
+html[data-theme="dark"] .foodrank-profile [class~="bg-[#fcfaf6]"],
+html[data-theme="dark"] .foodrank-profile-edit [class~="bg-[#fcfaf6]"] {
+  background-color: var(--theme-surface);
+}
+html[data-theme="dark"] .foodrank-profile [class~="bg-[#f7f3eb]"],
+html[data-theme="dark"] .foodrank-profile-edit [class~="bg-[#f7f3eb]"] {
+  background-color: var(--theme-page);
+}
+html[data-theme="dark"] .foodrank-profile [class~="border-[#e1d7c8]"],
+html[data-theme="dark"] .foodrank-profile [class~="border-[#e4dacb]"],
+html[data-theme="dark"] .foodrank-profile [class~="border-[#e7ddcf]"],
+html[data-theme="dark"] .foodrank-profile [class~="border-[#e9e0d3]"],
+html[data-theme="dark"] .foodrank-profile-edit [class~="border-[#e4dac9]"] {
+  border-color: var(--theme-border);
+}
+html[data-theme="dark"] .foodrank-profile [class~="text-[#947447]"],
+html[data-theme="dark"] .foodrank-profile [class~="text-[#a88b54]"],
+html[data-theme="dark"] .foodrank-profile-edit [class~="text-[#a88b54]"] {
+  color: #dfc38d;
+}
+html[data-theme="dark"] .foodrank-profile [class~="bg-[#28351f]"],
+html[data-theme="dark"] .foodrank-profile-edit [class~="bg-[#28351f]"] {
+  background-color: #354a30;
+}
+html[data-theme="dark"] .foodrank-profile [class~="bg-[#28351f]"][class~="text-[#faf8f3]"],
+html[data-theme="dark"] .foodrank-profile [class~="bg-[#28351f]"][class~="text-white"],
+html[data-theme="dark"] .foodrank-profile-edit [class~="bg-[#28351f]"][class~="text-white"] {
+  color: #faf8f3;
+}
+html[data-theme="dark"] .foodrank-profile-edit input,
+html[data-theme="dark"] .foodrank-profile-edit textarea {
+  background-color: var(--theme-page);
+  border-color: var(--theme-border);
+  color: var(--theme-body);
+  caret-color: var(--theme-heading);
+}
+html[data-theme="dark"] .foodrank-profile-edit .profile-edit-input {
+  border-color: var(--theme-border);
+}
+html[data-theme="dark"] .foodrank-profile-edit .profile-edit-input:focus,
+html[data-theme="dark"] .foodrank-profile-edit .profile-edit-input:focus-within {
+  border-color: #dfc38d;
+  box-shadow: 0 2px 0 #dfc38d, 0 4px 12px rgba(223, 195, 141, .16);
+}
