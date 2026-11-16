@@ -75,7 +75,8 @@ export function geoapifyProvider(apiKey, fetcher = fetch) {
           municipalityVerification: 'boundary', municipalityBoundaryId: municipality.place_id,
           price: p.datasource?.raw?.price_range || '$$', rating: null,
           externalRating: null, externalRatingCount: null, foodrankRating: null,
-          image: p.datasource?.raw?.image || 'https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=900&q=80',
+          // Fotos vinculadas ao próprio POI, nunca foto genérica de comida.
+          image: p.wiki_and_media?.image || p.datasource?.raw?.image || null,
         })
       }
       if (page.length < 500) return restaurants
