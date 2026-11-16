@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { AuthContext } from './authContext'
 import { supabase } from '../services/supabase'
 
-const AuthContext = createContext(null)
 const siteUrl = () => new URL(import.meta.env.BASE_URL, window.location.origin).href
 
 export function AuthProvider({ children }) {
@@ -52,10 +52,4 @@ export function AuthProvider({ children }) {
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext)
-  if (!context) throw new Error('useAuth requer AuthProvider')
-  return context
 }
