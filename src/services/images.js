@@ -2,7 +2,7 @@ import { approvedRestaurantPhotos } from '../data/approvedRestaurantPhotos'
 
 // Match stable POI id, city/state and physical location to avoid reusing a
 // photo for another branch of the same chain or for a moved business.
-export function getApprovedRestaurantPhoto(restaurant) {
+export function resolveApprovedRestaurantPhoto(restaurant, approvedPhotos) {
   if (!restaurant || restaurant.id == null) return null
   const latitude = Number(restaurant.latitude)
   const longitude = Number(restaurant.longitude)
@@ -11,7 +11,7 @@ export function getApprovedRestaurantPhoto(restaurant) {
   const normalize = (value) => String(value ?? '').normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '').trim().toLowerCase()
 
-  const photo = approvedRestaurantPhotos.find(item =>
+  const photo = approvedPhotos.find(item =>
     String(item.id) === String(restaurant.id) &&
     normalize(item.city) === normalize(restaurant.city) &&
     normalize(item.state) === normalize(restaurant.state) &&
@@ -46,4 +46,8 @@ export function safeImageUrl(value) {
     if (url.protocol !== 'https:' || url.href.includes(legacyPlaceholder)) return null
     return url.href
   } catch { return null }
+}
+
+export function getApprovedRestaurantPhoto(restaurant) {
+  return resolveApprovedRestaurantPhoto(restaurant, approvedRestaurantPhotos)
 }
