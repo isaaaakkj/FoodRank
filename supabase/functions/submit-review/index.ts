@@ -38,7 +38,6 @@ Deno.serve(async (request) => {
     return json({ error: 'Dados inválidos.' }, 400, origin)
   }
 
-  const author_name = value(input.author_name, 80)
   const restaurant_id = value(input.restaurant_id, 150)
   const restaurant_name = value(input.restaurant_name, 160)
   const city = value(input.city, 100)
@@ -46,8 +45,7 @@ Deno.serve(async (request) => {
   const comment = value(input.comment, 2000)
   const rating = input.rating
   const token = value(input.turnstile_token, 2048)
-  if (author_name.length < 2 || author_name.length > 80 ||
-      !restaurant_id || restaurant_id.length > 150 ||
+  if (!restaurant_id || restaurant_id.length > 150 ||
       !restaurant_name || restaurant_name.length > 160 ||
       !city || city.length > 100 || !state || state.length > 100 ||
       comment.length < 10 || comment.length > 2000 ||
@@ -73,8 +71,22 @@ Deno.serve(async (request) => {
     const supabase = createClient(url, roleKey, {
       auth: { persistSession: false, autoRefreshToken: false },
     })
+    // Nunca aceitar user_id ou author_name do corpo: a identidade vem do JWT validado.
+    const bearer = request.headers.get('authorization')?.match(/^Bearer\\s+(.+)$/i)?.[1]
+    if (!bearer) return json({ error: 'Faça login com Google para avaliar.' }, 401, origin)
+    const { data: identity, error: identityError } = await supabase.auth.getUser(bearer)
+    if (identityError || !identity.user?.id || identity.user.is_anonymous) {
+      return json({ error: 'Sessão inválida. Entre novamente.' }, 401, origin)
+    }
+    const { data: profile, error: profileError } = await supabase.from('profiles')
+      .select('display_name').eq('id', identity.user.id).single()
+    if (profileError || !profile?.display_name) {
+      return json({ error: 'Perfil indisponível. Configure o banco de dados.' }, 503, origin)
+    }
     const { error } = await supabase.from('reviews').insert({
-      restaurant_id, restaurant_name, city, state, author_name,
+      restaurant_id, restaurant_name, city, state,
+      author_name: profile.display_name,
+      user_id: identity.user.id,
       comment, rating, status: 'approved',
     })
     if (error) {
