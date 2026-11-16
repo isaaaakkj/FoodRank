@@ -12,7 +12,7 @@ export default function RestaurantReviews({ restaurant, refreshKey = 0 }) {
     return () => { cancelled = true }
   }, [restaurant.id, restaurant.city, restaurant.state, refreshKey])
   return (
-    <section className="mt-8 rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-6 md:p-8" aria-labelledby="restaurant-reviews">
+    <section className="foodrank-review-feed mt-8 rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-6 md:p-8" aria-labelledby="restaurant-reviews">
       <h2 id="restaurant-reviews" className="font-display text-2xl font-semibold text-[#28351f]">Avaliações da comunidade</h2>
       {state.loading ? <p role="status" className="mt-4">Carregando avaliações...</p>
         : state.error ? <p role="alert" className="mt-4">{state.error}</p>
