@@ -1,6 +1,6 @@
 import { supabase } from './supabase'
 
-const publicFields = 'id,restaurant_id,restaurant_name,city,state,author_name,rating,comment,created_at'
+const publicFields = 'id,restaurant_id,restaurant_name,city,state,author_name,author_username,author_avatar_url,rating,comment,created_at'
 
 export async function getApprovedReviews(limit = 20) {
   if (!supabase) throw new Error('Supabase não configurado.')
