@@ -32,3 +32,6 @@ artifacts/
 playwright-report/
 test-results/
 supabase/.temp/
+
+# Fotos baixadas localmente pelo script (incluídas no build do GitHub Pages)
+/public/category-images/
