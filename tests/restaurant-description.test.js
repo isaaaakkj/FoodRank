@@ -14,7 +14,7 @@ describe('descrições dos restaurantes', () => {
       state: 'SP',
       location: 'Rua Exemplo, 15',
     })
-    expect(description).toContain('Cafeteria localizado em Rua Exemplo, 15')
+    expect(description).toContain('Cafeteria em Rua Exemplo, 15')
     expect(description).not.toMatch(/cardápio variado|melhor|excelente|desde 19/)
   })
 
