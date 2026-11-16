@@ -98,7 +98,7 @@ export default function EditProfile() {
         ) : !user ? (
           <div className="mt-8 rounded-3xl bg-white p-8">Você precisa entrar na conta para editar seu perfil. <Link to="/profile" className="font-bold underline">Acessar perfil</Link></div>
         ) : profile ? (
-          <form onSubmit={submit} className="mt-8 space-y-6">
+          <form onSubmit={submit} className="profile-edit-form mt-8 space-y-6">
             <section className="overflow-hidden rounded-[28px] border border-[#e4dac9] bg-[#fcfaf6] shadow-sm">
               <div className="bg-[#28351f] px-6 py-5 text-white md:px-9">
                 <div className="flex items-center gap-3"><Camera size={20} className="text-[#d4b66f]"/><h2 className="text-base font-bold">Sua foto</h2></div>
@@ -129,7 +129,7 @@ export default function EditProfile() {
                 <div>
                   <label htmlFor="profile-name" className="mb-2 block text-sm font-bold">Nome de exibição</label>
                   <input id="profile-name" required minLength={2} maxLength={80} value={form.display_name} onChange={event => setForm(v => ({...v, display_name: event.target.value}))}
-                    className="w-full rounded-xl border border-[#d8cbb7] bg-white px-4 py-3.5 text-sm text-[#28351f] outline-none transition focus:border-[#a88b54]" placeholder="Como você quer ser chamado?" />
+                    className="profile-edit-input w-full rounded-xl border border-[#d8cbb7] bg-white px-4 py-3.5 text-sm text-[#28351f] transition" placeholder="Como você quer ser chamado?" />
                 </div>
 
                 <div>
@@ -137,11 +137,11 @@ export default function EditProfile() {
                     <label htmlFor="profile-username" className="text-sm font-bold">Nome de usuário</label>
                     <span className="text-xs font-medium text-[#777269]">{form.username.length}/15</span>
                   </div>
-                  <div className="flex items-center rounded-xl border border-[#d8cbb7] bg-white px-4 focus-within:border-[#a88b54]">
+                  <div className="profile-edit-input flex items-center rounded-xl border border-[#d8cbb7] bg-white px-4 transition">
                     <span className="font-bold text-[#a88b54]">@</span>
                     <input id="profile-username" required minLength={3} maxLength={15} pattern="[a-z0-9_]{3,15}" title="Use 3 a 15 caracteres: letras minúsculas, números e _"
                       value={form.username} onChange={event => setForm(v => ({ ...v, username: event.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 15) }))}
-                      className="w-full bg-transparent px-2 py-3.5 text-sm text-[#28351f] outline-none" placeholder="seu_usuario" />
+                      className="w-full bg-transparent px-2 py-3.5 text-sm text-[#28351f]" placeholder="seu_usuario" />
                   </div>
                   <p className="mt-2 text-xs leading-6 text-[#777269]">De 3 a 15 caracteres. Apenas letras, números e _. Cada nome de usuário é exclusivo.</p>
                 </div>
@@ -152,7 +152,7 @@ export default function EditProfile() {
                     <span className="text-xs font-medium text-[#777269]">{form.bio.length}/300</span>
                   </div>
                   <textarea id="profile-bio" rows={4} maxLength={300} value={form.bio} onChange={event => setForm(v => ({ ...v, bio: event.target.value }))}
-                    className="w-full resize-y rounded-xl border border-[#d8cbb7] bg-white px-4 py-3.5 text-sm text-[#28351f] outline-none focus:border-[#a88b54]" placeholder="Suas comidas favoritas, histórias e descobertas..." />
+                    className="profile-edit-input w-full resize-y rounded-xl border border-[#d8cbb7] bg-white px-4 py-3.5 text-sm text-[#28351f] transition" placeholder="Suas comidas favoritas, histórias e descobertas..." />
                 </div>
               </div>
             </section>
