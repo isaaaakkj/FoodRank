@@ -89,7 +89,7 @@ export default function ReviewForm({ location, enabled = false }) {
     if (event.key === 'ArrowDown' && suggestions.length) {
       event.preventDefault()
       setSuggestionsOpen(true)
-      setActiveIndex((index) => Math.min(index + 1, suggestions.length - 1))
+      setActiveIndex((index) => suggestionsOpen ? Math.min(index + 1, suggestions.length - 1) : 0)
     }
 
     if (event.key === 'ArrowUp' && suggestions.length) {
@@ -232,7 +232,7 @@ export default function ReviewForm({ location, enabled = false }) {
                           <MapPin size={14} aria-hidden="true" className="mt-0.5 shrink-0" />
                           {restaurantAddress(item, location?.city, location?.state)}
                         </span>
-                        {!item.location && item.latitude != null && item.longitude != null && (
+                        {item.latitude != null && item.longitude != null && Number.isFinite(Number(item.latitude)) && Number.isFinite(Number(item.longitude)) && (
                           <span className="block pl-5 text-xs text-[#6d6a61]">
                             Coordenadas: {Number(item.latitude).toFixed(5)}, {Number(item.longitude).toFixed(5)}
                           </span>
