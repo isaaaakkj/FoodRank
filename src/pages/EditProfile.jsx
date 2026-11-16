@@ -16,9 +16,8 @@ export default function EditProfile() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    if (!user) { setLoading(false); return undefined }
+    if (!user) return undefined
     let active = true
-    setLoading(true)
     getMyProfile(user.id)
       .then(data => {
         if (!active) return
@@ -34,12 +33,6 @@ export default function EditProfile() {
     return () => { active = false }
   }, [user])
 
-  useEffect(() => {
-    if (!photo) { setPreview(''); return undefined }
-    const objectUrl = URL.createObjectURL(photo)
-    setPreview(objectUrl)
-    return () => URL.revokeObjectURL(objectUrl)
-  }, [photo])
 
   function selectPhoto(event) {
     const file = event.target.files?.[0]
@@ -56,6 +49,9 @@ export default function EditProfile() {
     }
     setError('')
     setPhoto(file)
+    const reader = new FileReader()
+    reader.onload = () => setPreview(typeof reader.result === 'string' ? reader.result : '')
+    reader.readAsDataURL(file)
   }
 
   async function submit(event) {
@@ -97,7 +93,7 @@ export default function EditProfile() {
 
         {!available ? (
           <div className="mt-8 rounded-3xl bg-white p-8">O Supabase não está configurado.</div>
-        ) : authLoading || loading ? (
+        ) : authLoading || (user && loading) ? (
           <p role="status" className="mt-8">Carregando dados...</p>
         ) : !user ? (
           <div className="mt-8 rounded-3xl bg-white p-8">Você precisa entrar na conta para editar seu perfil. <Link to="/profile" className="font-bold underline">Acessar perfil</Link></div>
@@ -119,7 +115,7 @@ export default function EditProfile() {
                   <input id="profile-photo" type="file" accept="image/jpeg,image/png,image/webp" onChange={selectPhoto} className="sr-only" />
                   <p className="mt-3 text-xs leading-6 text-[#777269]">JPG, PNG ou WebP. Até 2 MB. A foto será exibida no perfil.</p>
                   {photo && (
-                    <button type="button" onClick={() => setPhoto(null)} className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[#6b3434]"><X size={14}/> Descartar nova foto</button>
+                    <button type="button" onClick={() => { setPhoto(null); setPreview('') }} className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[#6b3434]"><X size={14}/> Descartar nova foto</button>
                   )}
                 </div>
               </div>
