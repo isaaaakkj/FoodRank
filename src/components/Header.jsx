@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
-import { Search, UserRound } from 'lucide-react'
+import { UserRound } from 'lucide-react'
 
-export default function Header({ search, onSearchChange, searchEnabled }) {
+export default function Header() {
   return (
     <header className="w-full border-b border-[#ddd3c2]/70 bg-[#f7f3eb]">
       <a href="#main-content" className="skip-link" onClick={event => {
@@ -24,30 +24,6 @@ export default function Header({ search, onSearchChange, searchEnabled }) {
             <p className="mt-1 text-[8px] font-semibold uppercase tracking-[0.18em] text-[#6d6a61]">
               Descubra. Experimente. Saboreie.
             </p>
-          </div>
-        </div>
-
-        {/* Busca */}
-        <div className="order-last w-full md:order-none md:max-w-[400px] md:flex-1">
-          <div className={`flex h-11 items-center gap-3 rounded-full border border-[#d8cbb7] bg-[#faf8f3] px-5 transition ${searchEnabled ? 'focus-within:border-[#28351f]' : 'opacity-65'}`}>
-
-            <Search
-              size={19}
-              strokeWidth={1.7}
-              className="text-[#604936]"
-            />
-
-            <input
-              aria-label={searchEnabled ? "Filtrar restaurantes por nome, cozinha ou localização" : "Selecione estado e cidade para habilitar a pesquisa"}
-              disabled={!searchEnabled}
-              type="search"
-              value={search}
-              onChange={(event) => onSearchChange(event.target.value)}
-              placeholder={searchEnabled ? "Filtrar restaurantes, cozinhas ou localização" : "Selecione estado e cidade para pesquisar"}
-              title={!searchEnabled ? "Escolha o estado e a cidade e clique em Buscar para liberar a pesquisa." : undefined}
-              className="w-full bg-transparent text-sm text-[#20231d] outline-none placeholder:text-[#777269] disabled:cursor-not-allowed"
-            />
-
           </div>
         </div>
 
