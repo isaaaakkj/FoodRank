@@ -8,7 +8,7 @@ export default function ReviewCard({ review }) {
     ? review.author_avatar_url : null
   const date = review.created_at ? new Date(review.created_at).toLocaleDateString('pt-BR') : ''
   return (
-    <article className="border-b border-[#ddd3c2] py-6">
+    <article className="foodrank-review-card border-b border-[#ddd3c2] py-6">
       <div className="flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
           <div aria-hidden="true" className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#28351f] font-semibold text-[#f7f3eb]">

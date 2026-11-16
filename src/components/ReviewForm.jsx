@@ -163,7 +163,7 @@ export default function ReviewForm({ location, enabled = false, fixedRestaurant 
   }
 
   return (
-    <section id={fixedRestaurant ? "restaurant-review-form" : undefined} className="mx-auto max-w-[1100px] py-12" aria-labelledby="review-title">
+    <section id={fixedRestaurant ? "restaurant-review-form" : undefined} className="foodrank-review-form mx-auto max-w-[1100px] py-12" aria-labelledby="review-title">
       <div className="overflow-hidden rounded-[30px] border border-[#d8cbb7] bg-[#fcfaf6] shadow-[0_24px_60px_rgba(40,53,31,.10)]">
         <div className="relative overflow-hidden bg-[#28351f] px-6 py-9 text-[#faf8f3] sm:px-9 md:py-11">
           <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_93%_4%,rgba(212,182,111,.27),transparent_47%),linear-gradient(120deg,#172014,#28351f_66%,#493b2a)]" />

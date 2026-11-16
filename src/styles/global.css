@@ -198,3 +198,77 @@ html[data-theme="dark"] .foodrank-profile-edit .profile-edit-input:focus-within 
   border-color: #dfc38d;
   box-shadow: 0 2px 0 #dfc38d, 0 4px 12px rgba(223, 195, 141, .16);
 }
+
+/* Avaliações: mesmas superfícies e contraste do restante do FoodRank no modo escuro. */
+html[data-theme="dark"] .foodrank-review-form [class~="bg-[#fcfaf6]"],
+html[data-theme="dark"] .foodrank-review-form [class~="bg-[#faf8f3]"],
+html[data-theme="dark"] .foodrank-review-feed [class~="bg-[#faf8f3]"] {
+  background-color: var(--theme-surface);
+}
+html[data-theme="dark"] .foodrank-review-form [class~="bg-[#f1e9dc]"],
+html[data-theme="dark"] .foodrank-review-form [class~="bg-[#f6f0e7]"],
+html[data-theme="dark"] .foodrank-review-form [class~="bg-[#eee7d9]"] {
+  background-color: var(--theme-surface-muted);
+}
+html[data-theme="dark"] .foodrank-review-form [class~="bg-white"] {
+  background-color: var(--theme-page);
+}
+html[data-theme="dark"] .foodrank-review-form [class~="bg-[#e8dfcf]"] {
+  background-color: #344034;
+}
+html[data-theme="dark"] .foodrank-review-form [class~="border-[#d8cbb7]"],
+html[data-theme="dark"] .foodrank-review-form [class~="border-[#e0d4c2]"],
+html[data-theme="dark"] .foodrank-review-form [class~="border-[#e2d7c6]"],
+html[data-theme="dark"] .foodrank-review-form [class~="border-[#c8bca5]"],
+html[data-theme="dark"] .foodrank-review-form [class~="border-[#cfc0a6]"],
+html[data-theme="dark"] .foodrank-review-form [class~="border-[#ddd3c2]"],
+html[data-theme="dark"] .foodrank-review-card [class~="border-[#ddd3c2]"],
+html[data-theme="dark"] .foodrank-review-feed [class~="border-[#ddd3c2]"] {
+  border-color: var(--theme-border);
+}
+html[data-theme="dark"] .foodrank-review-form [class~="text-[#28351f]"],
+html[data-theme="dark"] .foodrank-review-form [class~="text-[#20231d]"],
+html[data-theme="dark"] .foodrank-review-card [class~="text-[#20231d]"],
+html[data-theme="dark"] .foodrank-review-feed [class~="text-[#28351f]"] {
+  color: var(--theme-heading);
+}
+html[data-theme="dark"] .foodrank-review-form [class~="text-[#604936]"],
+html[data-theme="dark"] .foodrank-review-card [class~="text-[#604936]"],
+html[data-theme="dark"] .foodrank-review-feed [class~="text-[#604936]"] {
+  color: var(--theme-brown);
+}
+html[data-theme="dark"] .foodrank-review-form [class~="text-[#6d6a61]"],
+html[data-theme="dark"] .foodrank-review-form [class~="text-[#777269]"],
+html[data-theme="dark"] .foodrank-review-card [class~="text-[#6d6a61]"],
+html[data-theme="dark"] .foodrank-review-feed [class~="text-[#6d6a61]"] {
+  color: var(--theme-secondary);
+}
+html[data-theme="dark"] .foodrank-review-form [class~="text-[#8d7041]"],
+html[data-theme="dark"] .foodrank-review-form [class~="text-[#a88b54]"] {
+  color: #dfc38d;
+}
+/* O cabeçalho verde e o botão primário continuam claros sobre fundo escuro. */
+html[data-theme="dark"] .foodrank-review-form [class~="bg-[#28351f]"][class~="text-[#faf8f3]"] {
+  color: #faf8f3;
+}
+html[data-theme="dark"] .foodrank-review-form [class~="bg-[#28351f]"] {
+  background-color: #354a30;
+}
+html[data-theme="dark"] .foodrank-review-form input,
+html[data-theme="dark"] .foodrank-review-form textarea {
+  color: var(--theme-body);
+  caret-color: var(--theme-heading);
+}
+html[data-theme="dark"] .foodrank-review-form [class~="bg-[#faf8f3]"]:hover,
+html[data-theme="dark"] .foodrank-review-form [class~="hover:bg-[#eee7d9]"]:hover {
+  background-color: #3a483a;
+}
+html[data-theme="dark"] .foodrank-review-form [aria-selected="true"][class~="bg-[#eee7d9]"] {
+  background-color: #41533e;
+}
+html[data-theme="dark"] .foodrank-review-form [class~="text-[#bcae95]"] {
+  color: #99a78f;
+}
+html[data-theme="dark"] .foodrank-review-form [class~="text-[#9d4a3b]"] {
+  color: #f3a99d;
+}

@@ -18,7 +18,7 @@ export default function TimelineSection({ showLink = true }) {
   }, [showLink, attempt])
 
   return (
-    <section className="mx-auto max-w-[1000px] py-12" aria-labelledby="community-heading">
+    <section className="foodrank-review-feed mx-auto max-w-[1000px] py-12" aria-labelledby="community-heading">
       <div className="mb-5 flex items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a88b54]">Comunidade FoodRank</p>
