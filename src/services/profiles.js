@@ -14,16 +14,54 @@ export async function saveMyProfile(userId, values) {
   const username = String(values.username ?? '').trim().toLowerCase()
   const displayName = String(values.display_name ?? '').trim()
   const bio = String(values.bio ?? '').trim()
-  if (!/^[a-z0-9_]{3,40}$/.test(username)) throw new Error('O usuário deve ter entre 3 e 40 caracteres: letras minúsculas, números ou _.')
-  if (displayName.length < 2 || displayName.length > 80 || bio.length > 300) throw new Error('Confira o nome e a descrição (até 300 caracteres).')
+  if (!/^[a-z0-9_]{3,15}$/.test(username)) {
+    throw new Error('O @usuário deve ter de 3 a 15 caracteres: letras minúsculas, números ou _.')
+  }
+  if (displayName.length < 2 || displayName.length > 80 || bio.length > 300) {
+    throw new Error('Confira o nome (2 a 80 caracteres) e a biografia (até 300).')
+  }
+  const update = { username, display_name: displayName, bio }
+  if (values.avatar_url !== undefined) {
+    if (values.avatar_url !== null && (
+      typeof values.avatar_url !== 'string' ||
+      values.avatar_url.length > 1000 ||
+      !values.avatar_url.startsWith('https://')
+    )) throw new Error('Endereço da imagem inválido.')
+    update.avatar_url = values.avatar_url
+  }
   const { data, error } = await supabase.from('profiles')
-    .update({ username, display_name: displayName, bio })
+    .update(update)
     .eq('id', userId)
     .select('id,username,display_name,avatar_url,bio')
     .single()
   if (error?.code === '23505') throw new Error('Este @usuário já está em uso. Escolha outro.')
+  if (error?.code === '23514') throw new Error('O @usuário precisa ter no máximo 15 caracteres.')
   if (error) throw new Error('Não foi possível salvar o perfil.')
   return data
+}
+
+export async function uploadMyAvatar(userId, file) {
+  if (!supabase || !userId) throw new Error('Entre na sua conta para alterar a foto.')
+  if (!file || !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    throw new Error('Escolha uma imagem JPG, PNG ou WebP.')
+  }
+  if (file.size > 2 * 1024 * 1024 || file.size === 0) {
+    throw new Error('A foto precisa ter até 2 MB.')
+  }
+
+  const extension = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[file.type]
+  const path = `${userId}/${crypto.randomUUID()}.${extension}`
+  const bucket = supabase.storage.from('profile-avatars')
+  const { error } = await bucket.upload(path, file, { contentType: file.type, upsert: false })
+  if (error) throw new Error('Não foi possível enviar a foto. Tente novamente.')
+
+  const { data } = bucket.getPublicUrl(path)
+  return { url: data.publicUrl, path }
+}
+
+export async function removeUploadedAvatar(path) {
+  if (!supabase || !path) return
+  await supabase.storage.from('profile-avatars').remove([path])
 }
 
 export async function getMyReviewHistory(userId) {
