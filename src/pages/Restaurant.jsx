@@ -1,4 +1,5 @@
 import FavoriteButton from '../components/FavoriteButton'
+import CategoryPhoto from '../components/CategoryPhoto'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, MapPin } from 'lucide-react'
@@ -136,8 +137,15 @@ export default function Restaurant() {
 
       <main className="mx-auto max-w-[1200px] px-4 py-8 lg:px-6">
 
-        <section className="relative py-8 pr-16">
+        <div className="relative h-[280px] overflow-hidden rounded-2xl md:h-[420px]">
+          <CategoryPhoto category={restaurant.category} />
           <FavoriteButton restaurant={restaurant} />
+          <span className="absolute bottom-5 left-5 rounded-full bg-[#28351f]/90 px-4 py-2 text-xs font-semibold text-[#f7f3eb]">
+            {restaurant.category || 'Restaurante'}
+          </span>
+        </div>
+
+        <section className="py-8">
 
           <div className="flex flex-col justify-between gap-5 md:flex-row">
 
@@ -179,7 +187,7 @@ export default function Restaurant() {
             </p>
             <p className="mt-4 text-sm leading-6 text-[#6d6a61]">
               As informações são baseadas nos dados cadastrados para este estabelecimento.
-              Antes de visitar, confirme horários, cardápio e serviços diretamente com o local.
+              A foto acima é ilustrativa da categoria. Antes de visitar, confirme horários, cardápio e serviços diretamente com o local.
             </p>
 
           </section>
