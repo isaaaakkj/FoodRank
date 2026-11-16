@@ -20,6 +20,7 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npx --yes deno@2.9.6 check supabase/functions/get-restaurants/index.ts
+      - run: npx --yes deno@2.9.6 check supabase/functions/submit-review/index.ts
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
       - run: npm run build
