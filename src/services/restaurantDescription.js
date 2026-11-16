@@ -28,5 +28,5 @@ export function getRestaurantDescription(restaurant) {
     (category ? `Restaurante de culinária ${category.toLocaleLowerCase('pt-BR')}` : 'Restaurante')
 
   const locationSentence = place ? ` em ${place}` : ''
-  return `${label}${locationSentence}. Consulte a localização no mapa e as avaliações dos visitantes para conhecer melhor esta unidade.`
+  return `${label}${locationSentence}. Consulte a localização no mapa e as avaliações dos visitantes para conhecer esta unidade.`
 }
