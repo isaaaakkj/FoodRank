@@ -79,13 +79,15 @@ Deno.serve(async (request) => {
       return json({ error: 'Sessão inválida. Entre novamente.' }, 401, origin)
     }
     const { data: profile, error: profileError } = await supabase.from('profiles')
-      .select('display_name').eq('id', identity.user.id).single()
+      .select('display_name,username,avatar_url').eq('id', identity.user.id).single()
     if (profileError || !profile?.display_name) {
       return json({ error: 'Perfil indisponível. Configure o banco de dados.' }, 503, origin)
     }
     const { error } = await supabase.from('reviews').insert({
       restaurant_id, restaurant_name, city, state,
       author_name: profile.display_name,
+      author_username: profile.username,
+      author_avatar_url: profile.avatar_url,
       user_id: identity.user.id,
       comment, rating, status: 'approved',
     })
