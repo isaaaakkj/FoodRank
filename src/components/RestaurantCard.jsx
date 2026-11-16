@@ -2,7 +2,6 @@ import FavoriteButton from './FavoriteButton'
 import CategoryPhoto from './CategoryPhoto'
 import { MapPin } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { getRestaurantDescription } from '../services/restaurantDescription'
 
 export default function RestaurantCard({ restaurant }) {
   const navigate = useNavigate()
@@ -28,16 +27,12 @@ export default function RestaurantCard({ restaurant }) {
           {restaurant.name}
         </h3>
 
-        <p className="mt-3 text-sm leading-6 text-[#6d6a61]">
-          {getRestaurantDescription(restaurant)}
-        </p>
-
-        <div className="mt-4 flex items-start gap-1.5 text-sm text-[#604936]">
+        <div className="mt-3 flex items-start gap-1.5 text-sm text-[#604936]">
           <MapPin size={15} className="mt-0.5 shrink-0" aria-hidden="true" />
           <span>{restaurant.location || [restaurant.city, restaurant.state].filter(Boolean).join(', ') || 'Localização não informada'}</span>
         </div>
 
-        <div className="mt-auto flex justify-end border-t border-[#ded5c6] pt-4">
+        <div className="mt-4 flex justify-end border-t border-[#ded5c6] pt-4">
           <button
             onClick={openRestaurant}
             className="text-sm font-semibold text-[#6b3434] transition hover:text-[#28351f]"
