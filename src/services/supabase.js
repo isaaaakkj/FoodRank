@@ -15,7 +15,7 @@ function configuredClient() {
   try {
     if (new URL(url).protocol !== 'https:' || !isPublicKey(key)) return null
     return createClient(url, key, {
-      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' },
     })
   } catch {
     return null
