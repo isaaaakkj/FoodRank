@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeft, ArrowUpRight, Coffee, LogOut, MapPin, Pencil, Star, UserRound, UtensilsCrossed } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, LogOut, MapPin, Pencil, Star, UserRound } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { getMyProfile, getMyReviewHistory } from '../services/profiles'
@@ -109,7 +109,6 @@ export default function Profile() {
             <section aria-label="Avaliações do usuário" className="overflow-hidden rounded-[26px] border border-[#e1d7c8] bg-[#fcfaf6]">
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e4dacb] px-6 py-5 md:px-9">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#eee7d9] text-[#947447]"><Coffee size={19}/></span>
                   <h2 className="text-lg font-bold text-[#28351f]">Minhas avaliações</h2>
                 </div>
                 <span className="rounded-full bg-[#eee7d9] px-4 py-2 text-xs font-bold text-[#604936]">{approved.length} publicadas</span>
@@ -145,7 +144,6 @@ export default function Profile() {
                 </div>
               ) : (
                 <div className="px-6 py-12 text-center">
-                  <UtensilsCrossed size={30} className="mx-auto text-[#a88b54]"/>
                   <h3 className="mt-4 text-lg font-bold text-[#28351f]">Sua primeira avaliação começa com uma descoberta.</h3>
                   <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#6d6a61]">Você ainda não publicou avaliações com esta conta. Encontre um restaurante e compartilhe sua experiência.</p>
                   <Link to="/" className="mt-5 inline-flex rounded-full bg-[#28351f] px-6 py-3 text-sm font-bold text-white">Encontrar restaurantes</Link>
