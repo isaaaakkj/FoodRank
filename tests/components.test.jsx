@@ -1,4 +1,4 @@
-import { it, expect, vi } from 'vitest'
+import { it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
@@ -9,6 +9,10 @@ vi.mock('../src/services/restaurants', () => ({ getRestaurants: vi.fn() }))
 vi.mock('../src/services/reviews', () => ({ getApprovedReviews: vi.fn().mockResolvedValue([]) }))
 // The restaurant-search tests isolate the independent review submission flow.
 vi.mock('../src/components/ReviewForm', () => ({ default: () => null }))
+beforeEach(() => {
+  window.localStorage.clear()
+})
+
 const cafe = { id: 'cafe', name: 'Café São João', category: 'Café', city: 'São Paulo', state: 'São Paulo', location: 'Sé' }
 function renderHome() {
   return render(<MemoryRouter><Routes><Route path="/" element={<Home />} /><Route path="/restaurant/:id" element={<p>Detalhes abertos</p>} /></Routes></MemoryRouter>)
@@ -68,4 +72,32 @@ it('explica a atualização pendente quando o backend não confirma municípios'
   await selectCity(user)
   expect(await screen.findByText(/Não exibimos restaurantes sem confirmação de município/)).toBeVisible()
   expect(screen.queryByRole('button', { name: /Ver restaurante/ })).not.toBeInTheDocument()
+})
+
+it('salva localização confirmada e restaura a busca depois de remontar a página', async () => {
+  getRestaurants.mockResolvedValue([cafe])
+  const user = userEvent.setup()
+  const first = renderHome()
+  await selectCity(user)
+  expect(JSON.parse(window.localStorage.getItem('foodrank:last-location'))).toEqual({
+    state: 'São Paulo',
+    city: 'São Paulo',
+  })
+
+  first.unmount()
+  renderHome()
+  expect(screen.getByRole('button', { name: 'Estado' })).toHaveTextContent('São Paulo')
+  expect(screen.getByLabelText('Cidade')).toHaveValue('São Paulo')
+  expect(screen.getByRole('searchbox', { name: 'Pesquisar restaurantes' })).toBeEnabled()
+  expect(await screen.findByRole('heading', { name: cafe.name })).toBeVisible()
+})
+
+it('não sobrescreve localização salva enquanto o usuário edita a cidade', async () => {
+  getRestaurants.mockResolvedValue([cafe])
+  const user = userEvent.setup()
+  renderHome()
+  await selectCity(user)
+  await user.type(screen.getByLabelText('Cidade'), 'x')
+  expect(JSON.parse(window.localStorage.getItem('foodrank:last-location')).city).toBe('São Paulo')
+  expect(screen.getByRole('searchbox', { name: 'Pesquisar restaurantes' })).toBeDisabled()
 })
