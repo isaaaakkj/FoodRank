@@ -1,7 +1,11 @@
 import { Link } from 'react-router-dom'
+import { useAuth } from '../auth/AuthContext'
 import { Search, Bell, UserRound } from 'lucide-react'
 
 export default function Header({ search, onSearchChange }) {
+  const { user } = useAuth()
+  const avatar = user?.user_metadata?.avatar_url
+  const avatarValid = typeof avatar === 'string' && avatar.startsWith('https://')
   return (
     <header className="w-full border-b border-[#ddd3c2]/70 bg-[#f7f3eb]">
       <a href="#main-content" className="skip-link" onClick={event => {
@@ -67,12 +71,14 @@ export default function Header({ search, onSearchChange }) {
             <Bell size={21} strokeWidth={1.7} />
           </button>
 
-          <button
-            disabled title="O FoodRank não utiliza contas" aria-label="Perfil indisponível"
+          <Link
+            to="/profile"
+            title={user ? 'Meu perfil' : 'Entrar com Google'}
+            aria-label={user ? 'Meu perfil' : 'Entrar com Google'}
             className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-[#d8cbb7] bg-[#e8dfcf]"
           >
-            <UserRound size={20} className="text-[#604936]" />
-          </button>
+            {avatarValid ? <img src={avatar} referrerPolicy="no-referrer" alt="" className="h-full w-full object-cover" /> : <UserRound size={20} className="text-[#604936]" />}
+          </Link>
         </div>
 
       </div>
