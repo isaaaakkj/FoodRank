@@ -31,7 +31,8 @@ begin
   values (
     new.id,
     'user_' || replace(new.id::text, '-', ''),
-    left(coalesce(nullif(trim(new.raw_user_meta_data->>'full_name'), ''), 'Visitante'), 80),
+    case when char_length(trim(coalesce(new.raw_user_meta_data->>'full_name', ''))) >= 2
+      then left(trim(new.raw_user_meta_data->>'full_name'), 80) else 'Visitante' end,
     case
       when left(coalesce(new.raw_user_meta_data->>'avatar_url', ''), 8) = 'https://'
       then left(new.raw_user_meta_data->>'avatar_url', 1000)
@@ -52,7 +53,8 @@ insert into public.profiles (id, username, display_name, avatar_url)
 select
   u.id,
   'user_' || replace(u.id::text, '-', ''),
-  left(coalesce(nullif(trim(u.raw_user_meta_data->>'full_name'), ''), 'Visitante'), 80),
+  case when char_length(trim(coalesce(u.raw_user_meta_data->>'full_name', ''))) >= 2
+    then left(trim(u.raw_user_meta_data->>'full_name'), 80) else 'Visitante' end,
   case when left(coalesce(u.raw_user_meta_data->>'avatar_url', ''), 8) = 'https://'
     then left(u.raw_user_meta_data->>'avatar_url', 1000) else null end
 from auth.users u
