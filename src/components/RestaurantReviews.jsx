@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import ReviewCard from './ReviewCard'
 import { getRestaurantReviews } from '../services/reviews'
 
-export default function RestaurantReviews({ restaurant }) {
+export default function RestaurantReviews({ restaurant, refreshKey = 0 }) {
   const [state, setState] = useState({ loading: true, reviews: [], error: '' })
   useEffect(() => {
     let cancelled = false
@@ -10,7 +10,7 @@ export default function RestaurantReviews({ restaurant }) {
       .then(reviews => { if (!cancelled) setState({ loading: false, reviews, error: '' }) })
       .catch(() => { if (!cancelled) setState({ loading: false, reviews: [], error: 'Avaliações indisponíveis no momento.' }) })
     return () => { cancelled = true }
-  }, [restaurant.id, restaurant.city, restaurant.state])
+  }, [restaurant.id, restaurant.city, restaurant.state, refreshKey])
   return (
     <section className="mt-8 rounded-2xl border border-[#ddd3c2] bg-[#faf8f3] p-6 md:p-8" aria-labelledby="restaurant-reviews">
       <h2 id="restaurant-reviews" className="font-display text-2xl font-semibold text-[#28351f]">Avaliações da comunidade</h2>
