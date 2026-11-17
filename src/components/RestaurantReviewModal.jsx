@@ -6,6 +6,8 @@ import ReviewForm from './ReviewForm'
 export default function RestaurantReviewModal({ restaurant, location, onClose, onSubmitted }) {
   const dialogRef = useRef(null)
   const closeRef = useRef(null)
+  const onCloseRef = useRef(onClose)
+  onCloseRef.current = onClose
 
   useEffect(() => {
     const previousFocus = document.activeElement
@@ -16,7 +18,7 @@ export default function RestaurantReviewModal({ restaurant, location, onClose, o
     function handleKeyDown(event) {
       if (event.key === 'Escape') {
         event.preventDefault()
-        onClose()
+        onCloseRef.current()
       }
       if (event.key !== 'Tab') return
 
@@ -46,7 +48,7 @@ export default function RestaurantReviewModal({ restaurant, location, onClose, o
       document.body.style.overflow = previousOverflow
       previousFocus?.focus?.()
     }
-  }, [onClose])
+  }, [])
 
   return createPortal(
     <div
