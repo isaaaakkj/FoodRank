@@ -16,18 +16,25 @@ export default function Profile() {
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [retryKey, setRetryKey] = useState(0)
 
   useEffect(() => {
     if (!user) return undefined
     let active = true
     Promise.all([getMyProfile(user.id), getMyReviewHistory(user.id)])
       .then(([data, reviews]) => {
-        if (active) { setProfile(data); setHistory(reviews) }
+        if (active) { setProfile(data); setHistory(reviews); setError('') }
       })
       .catch(err => { if (active) setError(err.message) })
       .finally(() => { if (active) setLoading(false) })
     return () => { active = false }
-  }, [user])
+  }, [user, retryKey])
+
+  function retryProfile() {
+    setError('')
+    setLoading(true)
+    setRetryKey(key => key + 1)
+  }
 
   async function handleSignIn() {
     try { await signIn() } catch { setError('Não foi possível iniciar o login com Google.') }
@@ -152,7 +159,17 @@ export default function Profile() {
             </section>
           </div>
         ) : (
-          <p role="status" className="rounded-3xl bg-[#fcfaf6] p-9">Não foi possível exibir o perfil.</p>
+          <section className="rounded-3xl bg-[#fcfaf6] p-9">
+            <h1 className="text-xl font-semibold text-[#28351f]">Não foi possível exibir o perfil.</h1>
+            <p className="mt-2 max-w-xl text-sm text-[#604936]">O carregamento pode ter sido interrompido por uma instabilidade de conexão ou atualização do banco. Tente novamente.</p>
+            <button
+              type="button"
+              onClick={retryProfile}
+              className="mt-5 rounded-full bg-[#28351f] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#4b5b3d]"
+            >
+              Tentar novamente
+            </button>
+          </section>
         )}
       </div>
     </main>
