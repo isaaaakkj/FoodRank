@@ -43,7 +43,7 @@ export default function ReviewForm({ location, enabled = false, fixedRestaurant 
     ? authorProfile.avatar_url
     : user?.user_metadata?.avatar_url
   const avatarValid = typeof publicAvatar === 'string' && publicAvatar.startsWith('https://')
-  const { restaurants, loading, error } = useRestaurants(location?.city, location?.state, enabled)
+  const { restaurants, loading, error } = useRestaurants(location?.city, location?.state, enabled && !fixedRestaurant)
   const [notice, setNotice] = useState('')
   const [search, setSearch] = useState('')
   const [selectedKey, setSelectedKey] = useState('')
