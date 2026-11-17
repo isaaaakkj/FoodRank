@@ -7,7 +7,10 @@ export default function RestaurantReviewModal({ restaurant, location, onClose, o
   const dialogRef = useRef(null)
   const closeRef = useRef(null)
   const onCloseRef = useRef(onClose)
-  onCloseRef.current = onClose
+
+  useEffect(() => {
+    onCloseRef.current = onClose
+  }, [onClose])
 
   useEffect(() => {
     const previousFocus = document.activeElement
