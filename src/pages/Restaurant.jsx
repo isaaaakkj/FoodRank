@@ -6,7 +6,7 @@ import { ArrowLeft, MapPin } from 'lucide-react'
 
 import RestaurantMap from '../components/RestaurantMap'
 import RestaurantReviews from '../components/RestaurantReviews'
-import ReviewForm from '../components/ReviewForm'
+import RestaurantReviewModal from '../components/RestaurantReviewModal'
 import { getRestaurants } from '../services/restaurants'
 import { getRestaurantDescription } from '../services/restaurantDescription'
 
@@ -22,6 +22,7 @@ export default function Restaurant() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [reviewsVersion, setReviewsVersion] = useState(0)
+  const [reviewModalOpen, setReviewModalOpen] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -174,7 +175,7 @@ export default function Restaurant() {
 
           </div>
 
-          <a href="#restaurant-review-form" className="mt-6 inline-flex items-center rounded-full bg-[#28351f] px-6 py-3 text-sm font-semibold text-[#faf8f3] transition hover:bg-[#4b5b3d]">Avaliar este restaurante</a>
+          <button type="button" onClick={() => setReviewModalOpen(true)} className="mt-6 inline-flex items-center rounded-full bg-[#28351f] px-6 py-3 text-sm font-semibold text-[#faf8f3] transition hover:bg-[#4b5b3d]">Avaliar este restaurante</button>
 
         </section>
 
@@ -228,13 +229,15 @@ export default function Restaurant() {
         </div>
 
         <RestaurantReviews restaurant={restaurant} refreshKey={reviewsVersion} />
-        <ReviewForm
-          key={String(restaurant.id)}
-          location={{ city: restaurant.city || city, state: restaurant.state || state }}
-          enabled
-          fixedRestaurant={restaurant}
-          onSubmitted={() => setReviewsVersion(value => value + 1)}
-        />
+        {reviewModalOpen && (
+          <RestaurantReviewModal
+            key={String(restaurant.id)}
+            restaurant={restaurant}
+            location={{ city: restaurant.city || city, state: restaurant.state || state }}
+            onClose={() => setReviewModalOpen(false)}
+            onSubmitted={() => setReviewsVersion(value => value + 1)}
+          />
+        )}
 
       </main>
 
