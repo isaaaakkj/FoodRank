@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import ReviewCard from '../src/components/ReviewCard'
 
 const review = {
@@ -16,16 +17,18 @@ const review = {
 
 describe('identificação pública nas avaliações', () => {
   it('mostra imagem, nome público e @usuário na avaliação publicada', () => {
-    const { container } = render(<ReviewCard review={review} />)
+    const { container } = render(<MemoryRouter><ReviewCard review={review} /></MemoryRouter>)
     expect(screen.getByText('Ana Silva')).toBeInTheDocument()
     expect(screen.getByText('@ana_food')).toBeInTheDocument()
     expect(container.querySelector('img')).toHaveAttribute('src', 'https://example.com/avatar.jpg')
+    expect(screen.getByRole('link', { name: 'Ver perfil de @ana_food' })).toHaveAttribute('href', '/users/ana_food')
   })
 
   it('mantém avaliações antigas sem usuário ou avatar', () => {
-    const { container } = render(<ReviewCard review={{ ...review, author_username: null, author_avatar_url: null }} />)
+    const { container } = render(<MemoryRouter><ReviewCard review={{ ...review, author_username: null, author_avatar_url: null }} /></MemoryRouter>)
     expect(screen.queryByText('@ana_food')).not.toBeInTheDocument()
     expect(container.querySelector('img')).toBeNull()
     expect(screen.getByText('Ana Silva')).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Ver perfil de/ })).not.toBeInTheDocument()
   })
 })

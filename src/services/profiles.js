@@ -81,3 +81,13 @@ export async function getMyReviewHistory(userId) {
   if (error) throw new Error('Não foi possível carregar o histórico.')
   return data ?? []
 }
+
+export async function getPublicProfile(username) {
+  if (!supabase || !/^[a-z0-9_]{3,15}$/.test(username)) return null
+  const { data, error } = await supabase.from('profiles')
+    .select('username,display_name,avatar_url,bio,banner_color')
+    .eq('username', username)
+    .maybeSingle()
+  if (error) throw new Error('Não foi possível carregar o perfil público.')
+  return data
+}
