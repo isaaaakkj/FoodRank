@@ -8,6 +8,7 @@ import Home from '../pages/Home'
 import Restaurant from '../pages/Restaurant'
 import Profile from '../pages/Profile'
 import EditProfile from '../pages/EditProfile'
+import PublicProfile from '../pages/PublicProfile'
 
 function RoutedPages() {
   const { pathname } = useLocation()
@@ -16,6 +17,7 @@ function RoutedPages() {
       <Routes>
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/edit" element={<EditProfile />} />
+        <Route path="/users/:username" element={<PublicProfile />} />
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/timeline" element={<Timeline />} />
         <Route path="*" element={<NotFound />} />
