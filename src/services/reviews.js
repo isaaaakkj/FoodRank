@@ -34,3 +34,15 @@ export async function getRestaurantReviews(restaurantId, city, state) {
   if (error) throw new Error('Não foi possível carregar as avaliações.')
   return data ?? []
 }
+
+export async function getPublicUserReviews(username) {
+  if (!supabase || !/^[a-z0-9_]{3,15}$/.test(username)) return []
+  const { data, error } = await supabase.from('reviews')
+    .select(publicFields)
+    .eq('author_username', username)
+    .eq('status', 'approved')
+    .order('created_at', { ascending: false })
+    .limit(100)
+  if (error) throw new Error('Não foi possível carregar as avaliações públicas.')
+  return data ?? []
+}
