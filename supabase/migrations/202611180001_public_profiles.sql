@@ -3,7 +3,7 @@
 alter table public.profiles enable row level security;
 
 revoke select on public.profiles from anon, authenticated;
-grant select (username, display_name, avatar_url, bio, banner_color)
+grant select (id, username, display_name, avatar_url, bio, banner_color)
   on public.profiles to anon, authenticated;
 
 drop policy if exists "Community reads public profiles" on public.profiles;
