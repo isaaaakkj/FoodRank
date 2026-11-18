@@ -5,6 +5,7 @@ test('busca no celular, filtros, escolha de filial e detalhes sem serviços exte
     contentType: 'application/javascript',
     body: `export async function getApprovedReviews() { return [] }
       export async function getRestaurantReviews() { return [] }
+      export async function getPublicUserReviews() { return [] }
       export async function submitReview() { throw new Error('Envio não esperado neste teste') }`,
   }))
   // Mock dos serviços para testar a interface sem depender do Supabase.
